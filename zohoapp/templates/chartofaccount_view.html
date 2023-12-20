@@ -1,0 +1,1883 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.3/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/print-this/printThis.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+  integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+Wyj73RNMIpiD6bq5D2ZAdfPI4mM1iS6L4" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<style>
+  .modal {
+    z-index: 9999;
+    overflow: scroll;
+  }
+
+  a:hover {
+    color: rgb(214, 141, 5);
+  }
+
+  /* #aover:hover{
+  font-weight: bold;
+} */
+  tr:hover {
+    background-color: #8f8e8e2a;
+    font-weight: bold;
+
+  }
+
+
+  /* width */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: rgb(252, 236, 217);
+
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  #selected-area {
+    font-size: 20px;
+  }
+
+
+
+  /* .......................................... search box.............. */
+  .select-box {
+    position: relative;
+  }
+
+  .select-option {
+    position: relative;
+  }
+
+  .select-option input {
+    width: 100%;
+    cursor: pointer;
+    background-color: white;
+    color: black;
+    border-radius: 7px;
+    padding: 10px 15px;
+    border: 0 !important;
+    outline: 0 !important;
+  }
+
+  .select-option:after {
+    content: "";
+    border-top: 12px solid #000;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    margin-top: -8px;
+
+  }
+
+  .content {
+    background-color: white;
+    position: absolute;
+    color: black;
+    border-radius: 7px;
+    margin-top: 15px;
+    width: 100%;
+    z-index: 999;
+    padding: 20px;
+    display: none;
+  }
+
+  .search input {
+    width: 100%;
+    font-size: 17px;
+    padding: 15px;
+    outline: 0;
+    border: 1px solid #b3b3b3;
+    border-radius: 5px;
+  }
+
+  .options {
+    margin-top: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 0;
+
+  }
+
+  .options li {
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    border-bottom: 1px solid gray;
+  }
+
+  .select-box.active .content {
+    display: block;
+  }
+
+  .select-box.active .select-option:after {
+    transform: rotate(-180deg);
+  }
+
+
+
+  /* .......................................... search box1.............. */
+  .select-box1 {
+    position: relative;
+  }
+
+  .select-option1 {
+    position: relative;
+  }
+
+  .select-option1 input {
+    width: 100%;
+    cursor: pointer;
+    background-color: white;
+    color: black;
+    border-radius: 7px;
+    padding: 10px 15px;
+    border: 0 !important;
+    outline: 0 !important;
+  }
+
+  .select-option1:after {
+    content: "";
+    border-top: 12px solid #000;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    margin-top: -8px;
+
+  }
+
+  .content1 {
+    background-color: white;
+    position: absolute;
+    color: black;
+    border-radius: 7px;
+    margin-top: 15px;
+    width: 100%;
+    z-index: 999;
+    padding: 20px;
+    display: none;
+  }
+
+  .search1 input {
+    width: 100%;
+    font-size: 17px;
+    padding: 15px;
+    outline: 0;
+    border: 1px solid #b3b3b3;
+    border-radius: 5px;
+  }
+
+  .options1 {
+    margin-top: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 0;
+
+  }
+
+  .options1 li {
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    border-bottom: 1px solid gray;
+  }
+
+  .select-box1.active .content1 {
+    display: block;
+  }
+
+  .select-box1.active .select-option1:after {
+    transform: rotate(-180deg);
+  }
+
+  
+</style>
+<style>
+  .modal {
+    z-index: 9999;
+    overflow: scroll;
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+  }
+
+  .slip-page {
+    background: #ffffff;
+    display: block;
+    margin: 0 auto;
+    position: relative;
+    box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
+  }
+
+  .slip-page[size="A4"] {
+    width: 21cm;
+    height: 29.7cm;
+    overflow: hidden;
+  }
+
+  .equal-length-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    /* Make the container fill the height of the column */
+    margin-left: 2vh;
+    margin-right: 2vh;
+  }
+
+  .equal-length-item {
+    flex: 1;
+    text-align: center;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #202325;
+    padding: 1px;
+    margin: 0;
+  }
+
+  .store-user {
+    padding-bottom: 25px;
+  }
+
+  .store-user p {
+    margin: 0;
+    font-weight: 600;
+    color: #000000;
+  }
+
+  .store-user .address {
+    font-weight: 400;
+  }
+
+  .store-user h5 {
+    color: #22b8d1;
+    font-family: 'Rajdhani', sans-serif;
+  }
+
+  .bb {
+    border-bottom: 3px solid #ccc;
+  }
+
+  .top-content {
+    padding-bottom: 15px;
+  }
+
+  .ribbon .ribbon-inner {
+    text-align: center;
+    color: #fff;
+    top: -20px;
+    left: -90px;
+    width: 120px;
+    padding: 3px;
+
+  }
+
+  .ribbon .ribbon-open {
+    background-color: #268ddd;
+    border-color: #1c72b4;
+  }
+
+  .template .ribbon .ribbon-open {
+    background-color: #616263;
+    border-color: #616263;
+  }
+
+  .top-left p {
+    margin: 0;
+    color: #000000;
+  }
+
+  .top-left .graphic-path {
+    height: 40px;
+    position: relative;
+  }
+
+  .top-left .graphic-path::before {
+    content: "";
+    height: 20px;
+    background-color: #615c60;
+    position: absolute;
+    left: 15px;
+    right: 0;
+    top: -15px;
+    z-index: 2;
+  }
+
+  .top-left .graphic-path::after {
+    content: "";
+    height: 22px;
+    width: 17px;
+    background: #000000;
+    position: absolute;
+    top: -13px;
+    left: 6px;
+    transform: rotate(45deg);
+  }
+
+  .template3 .top-left .graphic-path::before {
+    background-color: #bbbbbb;
+  }
+
+  .template3 .top-left .graphic-path::after {
+    background: #616263b3;
+  }
+
+  .top-left .graphic-path p {
+    height: 40px;
+    left: 0;
+    right: 0;
+    text-transform: uppercase;
+    background-color: #22b8d1;
+    font: 26px;
+    z-index: 3;
+    position: absolute;
+    padding-left: 10px;
+  }
+
+  .template3 .top-left .graphic-path p {
+    background-color: #616263;
+    color: white;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+  }
+
+  .logo img {
+    max-height: 100px;
+  }
+
+  .company-info h2 {
+    margin: 0;
+    font-size: 2em;
+  }
+
+  .company-info p {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .i.invoice-box {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .invoice-box h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+
+  .invoice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .invoice-details p,
+  .client-details p {
+    margin: 5px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  #th {
+    background-color: #f2f2f2;
+    color: black;
+  }
+
+  .invoice-total {
+    margin-top: 20px;
+    text-align: right;
+  }
+
+  .invoice-total p {
+    margin: 5px 0;
+  }
+
+  footer {
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    font-size: 0.8em;
+    color: #888;
+    margin-top: 20px;
+  }
+
+  footer p {
+    margin: 5px 0;
+  }
+
+  .dropdown-item:hover {
+    color: chocolate;
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  .saleordertable {
+    border-collapse: collapse;
+    /* Collapse table borders */
+    border: none;
+    /* Remove table border */
+  }
+
+  .saleordertable td {
+    border: none;
+    /* Remove cell borders */
+    padding: 8px;
+    /* Add padding for cell content */
+    text-align: left;
+    /* Optional: Adjust text alignment */
+  }
+
+  #producttable {
+    border-collapse: collapse;
+    /* Collapse table borders */
+    border: none;
+    /* Remove table border */
+    color: white;
+  }
+
+  #producttable td {
+    border: none;
+    /* Remove cell borders */
+    padding: 8px;
+    /* Add padding for cell content */
+    text-align: left;
+    /* Optional: Adjust text alignment */
+  }
+
+  tr.clickable {
+    cursor: pointer;
+  }
+
+
+  @media print {
+
+    .unwanted,
+    .sidebar,
+    .sectionhtml {
+      display: none !important;
+    }
+
+    body {
+      visibility: hidden !important;
+    }
+
+    html {
+      overflow: hidden ! important;
+      visibility: hidden !important;
+    }
+
+
+    .printContainer {
+      visibility: visible !important;
+      /* Override the rule above to only show the printables*/
+      z-index: 99999;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: auto;
+    }
+
+
+
+  }
+
+  .scrollable-table {
+    max-height: 80%;
+    /* Maximum height for the tooltip */
+    overflow-y: auto;
+    /* Add vertical scrollbar when content overflows */
+  }
+
+  /* Style for the container */
+
+
+  /* Style for table cell */
+  .table-cell {
+    padding: 5px;
+  }
+  
+</style>
+<style>
+  .filter-button {
+    position: relative;
+    display: inline-block;
+  }
+
+  .btn-outline-warning {
+    /* Add your button styles here */
+  }
+
+  .scrollable-list-container {
+    max-height: 200px; /* Set your desired max height */
+    overflow-y: auto;
+    border: 1px solid #ccc; /* Optional: Add a border for aesthetics */
+    position: absolute;
+    top: 100%; /* Position below the button */
+    left: 0;
+    display: none; /* Hide initially */
+    z-index: 1;
+  }
+
+  .dropdown-item {
+    /* Add your dropdown item styles here */
+    display: block;
+    padding: 0.5rem 1rem;
+    clear: both;
+    font-weight: normal;
+    color: #fff;
+    text-decoration: none;
+    white-space: nowrap;
+    background-color: #343a40; /* Adjust background color */
+  }
+</style>
+
+
+<script>
+  //print form
+  function printForm() {
+
+    var selectedArea = document.getElementById("selected-area");
+
+
+    var printWindow = window.open('', 'PrintWindow', 'height=800,width=800');
+
+
+    printWindow.document.write('<html><head><title>Print Selected Area</title></head><body>' + selectedArea.innerHTML + '</body></html>');
+
+
+    printWindow.print();
+
+
+    printWindow.close();
+  }
+
+
+</script>
+
+<h2 class="mb text-white" style="margin-left: 8px;"> All Accounts</h2>
+
+<div class="container-fluid mt-4">
+  <div class="row">
+    <div class="col-md-4 vertical-separator">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="search-bar">
+          <form action="" method="GET" class="input-group">
+            <input type="text" id="myyInput" onkeyup="myyFunction()" placeholder="Search..."
+              class="form-control custom-height text-dark">
+          </form>
+        </div>
+
+        <div class="filter-button" onclick="toggleDropdown()">
+          <button class="btn btn-outline-warning text-right px-3 py-2" style="height: 38px;" type="button">
+              <i class="fa fa-filter"></i>
+          </button>
+          <div class="scrollable-list-container" id="myDropdown">
+           
+              <a class="dropdown-item" href="#" onclick="filterData('All')">All</a>
+              <a class="dropdown-item" href="#" onclick="filterData('Other Assets')">Other Assets</a>
+              <a class="dropdown-item" href="#" onclick="filterData('Other Current Assets')">Other Current Assets</a>
+              <a class="dropdown-item" href="#" onclick="filterData('Cash')">Cash</a>
+              <a class="dropdown-item" href="#" onclick="filterData('Bank')">Bank</a>
+              <a class="dropdown-item" href="#" onclick="filterData('Fixed Asset')">Fixed Asset</a>
+              <a class="dropdown-item" href="#" onclick="filterData('Stock')">Stock</a>
+              <a class="dropdown-item" href="#" onclick="filterData('Payment Clearing')">Payment Clearing</a>
+              <a class="dropdown-item" href="#" onclick="filterData('Other Liability)">Other Liability</a>
+              <a class="dropdown-item" href="#" onclick="filterData('Other Current Liability')">Other Current Liability</a>
+              <a class="dropdown-item" href="#" onclick="filterData('Credit Card')">Credit Card</a>
+              <a class="dropdown-item" href="#" onclick="filterData('Long Term Liability')">Long Term Liability</a>
+              <a class="dropdown-item" href="#" onclick="filterData('Overseas Tax Payable')">Overseas Tax Payable</a>
+              <a class="dropdown-item" href="#" onclick="filterData('Equity')">Equity</a>
+              <a class="dropdown-item" href="#" onclick="filterData('Income')">Income</a>
+              <a class="dropdown-item" href="#" onclick="filterData('Other Income')">Other Income</a>
+              <a class="dropdown-item" href="#" onclick="filterData('Expense')">Expense</a>
+              <a class="dropdown-item" href="#" onclick="filterData('Cost Of Goods Sold')">Cost Of Goods Sold</a>
+              <a class="dropdown-item" href="#" onclick="filterData('Other Expense')">Other Expense</a>
+           </ul>
+         </div>
+       </div>
+          
+
+        <a href="{% url 'create_new_chart_of_account' %}" class="btn btn-outline-warning text-right px-3 py-2"
+          style="height: 38px;">
+          <i class="fa fa-plus"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleDropdown() {
+    var dropdown = document.getElementById('myDropdown');
+    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+  }
+
+   //filter data
+   function filterData(selectedOption) {
+    console.log("Selected option:", selectedOption);
+
+    var rows = document.querySelectorAll('#MyTable tr');
+    rows.forEach(function (row) {
+        var category = row.getAttribute('data-category');
+
+        if (selectedOption === 'All' || category === selectedOption) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+
+    toggleDropdown(); // Close the dropdown after selecting an option
+}
+</script>
+
+
+
+<div class="row">
+  <div class="col-sm-4">
+    <div class="row  mx-2">
+      <div class="col-md-2 form-inline justify-content-end py-2">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        
+
+
+      </div>
+    </div>
+  
+    <div class="pt-3" style="height: 450px;overflow-y: scroll;width: 100%;overflow-x: hidden;">
+      <table class="text-white" style="width: 100%;" id="MyTable">
+        {% for view in views %}
+       
+        {% if view.status == "inactive" %}
+        <tr class="mt-5 pt-5 pb-5 mb-5" data-category="{{ view.account_type }}">
+
+          {% if view.parent_account == "GST Payable" %}
+          <td class="text-light pt-4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <img width="30" height="25" src="https://img.icons8.com/nolan/64/arrow.png" alt="arrow" />
+            <a id="aover" href="{% url 'chartofaccount_view' view.id%}">{{view.account_name}}</a>
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;{{view.account_type}}
+          </td>
+          {% endif %}
+          {% if view.parent_account == "Input Tax Credits" %}
+          <td class="text-light pt-4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <img width="30" height="25" src="https://img.icons8.com/nolan/64/arrow.png" alt="arrow" />
+            <a id="aover" href="{% url 'chartofaccount_view' view.id%}">{{view.account_name}}</a>
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{view.account_type}}
+          </td>
+          {% endif %}
+          {% if view.parent_account != "Input Tax Credits" %}
+          {% if view.parent_account != "GST Payable" %}
+
+          {% if view.account_name == "GST Payable" or view.account_name == "Input Tax Credits" %}
+          <td class="text-light pt-4">
+            <img width="35" height="35" src="https://img.icons8.com/avantgarde/100/folder-invoices.png"
+              alt="folder-invoices" />
+
+            <a id="aover" href="{% url 'chartofaccount_view' view.id%}">{{view.account_name}}</a>
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{view.account_type}}
+          </td>
+          {% else %}
+          <td class="text-light pt-4"><a id="aover"
+              href="{% url 'chartofaccount_view' view.id%}">{{view.account_name}}</a> <br> {{view.account_type}} </td>
+          {% endif %}
+
+          {% endif %}
+          {% endif %}
+
+
+
+
+          <td class="pt-4">
+            {% if view.status == "active" %}
+            <span style="color: rgb(4, 190, 4);">{{view.status}}</span>
+            {% else %}
+            <span style="color: red">{{view.status}}</span>
+            {% endif %}
+          </td>
+
+        </tr>
+        {% else %}
+        <tr class="mt-5 pt-5 pb-5 mb-5" data-category="{{ view.account_type }}">
+
+          {% if view.parent_account == "GST Payable" %}
+          <td class="text-light pt-4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <img width="30" height="25" src="https://img.icons8.com/nolan/64/arrow.png" alt="arrow" />
+            <a id="aover" href="{% url 'chartofaccount_view' view.id%}">{{view.account_name}}</a>
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;{{view.account_type}}
+          </td>
+          {% endif %}
+          {% if view.parent_account == "Input Tax Credits" %}
+          <td class="text-light pt-4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <img width="30" height="25" src="https://img.icons8.com/nolan/64/arrow.png" alt="arrow" />
+            <a id="aover" href="{% url 'chartofaccount_view' view.id%}">{{view.account_name}}</a>
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{view.account_type}}
+          </td>
+          {% endif %}
+          {% if view.parent_account != "Input Tax Credits" %}
+          {% if view.parent_account != "GST Payable" %}
+
+          {% if view.account_name == "GST Payable" or view.account_name == "Input Tax Credits" %}
+          <td class="text-light pt-4">
+            <img width="35" height="35" src="https://img.icons8.com/avantgarde/100/folder-invoices.png"
+              alt="folder-invoices" />
+
+            <a id="aover" href="{% url 'chartofaccount_view' view.id%}">{{view.account_name}}</a>
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{view.account_type}}
+          </td>
+          {% else %}
+          <td class="text-light pt-4"><a id="aover"
+              href="{% url 'chartofaccount_view' view.id%}">{{view.account_name}}</a> <br> {{view.account_type}} </td>
+          {% endif %}
+
+          {% endif %}
+          {% endif %}
+
+
+
+
+          <td class="pt-4">
+            {% if view.status == "active" %}
+            <span style="color: rgb(4, 190, 4);">{{view.status}}</span>
+            {% else %}
+            <span style="color: red">{{view.status}}</span>
+            {% endif %}
+          </td>
+
+        </tr>
+        {% endif %}
+        <tr></tr>
+
+        {% endfor %}
+      </table>
+
+    </div>
+  </div>
+
+  <div class="col-md-8 ml-1  mb-5 " id="overviewdiv">
+    <div class="row">
+      <div class="col-md-7">
+        <a class="text-white" style="font-size: 1.5rem;">
+          
+        </a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <a class="btn" style="background-color: chocolate; margin-right: 2vh;"><i class="fas fa-eye"></i>
+          Overview</a>
+        <a href=" " class=" btn fa fa-file-alt" data-bs-toggle="dropdown" id="attachmentDropdown"
+          aria-haspopup="true" aria-expanded="false"
+          style="background-color: white; color: black; margin-right: 2vh;"> Templates
+        </a>
+        <div class="dropdown-menu" aria-labelledby="attachmentDropdown">
+          <a class="dropdown-item" onclick="totemplate()"><i class="fa fa-file-alt"></i> Template 1</a>
+
+          <a class="dropdown-item" onclick="totemplate2()"><i class="fa fa-file-alt"></i>
+            Template 2</a>
+
+          <a class="dropdown-item" onclick="totemplate3()"><i class="fa fa-file-alt"></i>
+            Template 3</a>
+
+
+        </div>
+
+      </div>
+
+      <div class="col-md-6" style="text-align: center;">
+        <a href="{% url 'create_edit_chart_of_account' view.id %}" class="text-dark">
+          <button class="btn btn-outline-warning">
+            <i class="fa fa-edit"></i>
+          </button>
+        </a>
+    
+      <a href="mailto:example@example.com" class="text-dark">
+        <button class="btn btn-outline-warning" title="Email"><i class="mdi mdi-email"></i></button>
+    </a>
+    
+    <a href="{% url 'delet_chart' view.id %}" class="  text-dark">
+      <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button></a>
+        <a class="  text-dark" onclick="exportToPDF()">
+          <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
+        </a>
+        <a class=" text-dark" onclick="printSelectedArea()">
+          <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
+          </button>
+        </a>
+      </div>
+    </div><br>
+
+    <div class="row" id="div-to-pdf"
+      style="background-color: #ffddb0;  height: auto; margin-left:1px; margin-right: 1rem; ">
+
+      <div class="row text-center">
+        <h2 style="color: #000000;"><br>CHART OF ACCOUNTS
+          <hr>
+        </h2>
+      </div>
+      
+      <div class="gen-info col-6 " style="padding-left: 3rem; overflow-y: scroll; ">
+        <div class="row mt-1">
+          <div class="col-5"><label class="text-dark" for="">Account Name </label></div>
+          <div class="col-7">
+            <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">:{{ view.account_name }}</p>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-5"><label class="text-dark" for="">Account Type </label></div>
+          
+          <div class="col-7">
+            <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">:{{ view.account_type}}</p>
+          </div>
+          
+        </div>
+        <div class="row mt-3">
+          <div class="col-5"><label class="text-dark" for="">Account Code</label></div>
+          <div class="col-7">
+            <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">
+              :{{view.account_code}}</p>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-5"><label class="text-dark" for="">Status </label></div>
+          <div class="col-7">
+            <p class="bold text-dark" style="max-width: 15rem;word-wrap: break-word;">
+              :{{view.status}}</p>
+          </div>
+        </div>
+        
+        
+        
+      </div>
+      
+      <div class="p-info col-6" style="height: 100%; margin-bottom: 1vh;">
+        <div class="card" style="background-color: rgb(110, 61, 46); padding-left: 1rem; padding-top: 1rem;">
+          <div class="row text-center">
+            <h2>Accounts
+              <hr>
+            </h2>
+          </div>
+          
+          
+
+          <div class="row mt-2">
+            <div class="col-5"><label for="">Account Name </label></div>
+            <div class="col">
+              <p class="bold">:{{view.account_name}}</p>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-5"><label for="">Account Type </label></div>
+            <div class="col">
+              <p class="bold">:{{view.account_type}}</p>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-5"><label for="">Account Code</label></div>
+            <div class="col">
+              <p class="bold">:{{view.account_code}}</p>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-5"><label for="">Status </label></div>
+            <div class="col">
+              <p class="bold">:{{view.status}}</p>
+            </div>
+          </div>
+
+          
+          
+        </div><br>
+      </div>
+    </div>
+    
+   
+
+  </div>
+
+ 
+
+  <div class="col-md-8" id="templatediv" style="display: none;">
+    <div class="row">
+      <div class="col-md-7">
+        <a class="text-white" style="font-size: 1.5rem;">
+          
+        </a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <a class="btn" id="overviewbtn" onclick="tooverview()" style="background-color: chocolate; "><i
+            class="fas fa-eye"></i> Overview</a>
+        <a href=" " class=" btn fa fa-file-alt" data-bs-toggle="dropdown" id="attachmentDropdown"
+          aria-haspopup="true" aria-expanded="false"
+          style="background-color: white; color: black; margin-left: 2vh;"> Templates
+        </a>
+
+        <div class="dropdown-menu" aria-labelledby="attachmentDropdown">
+          <a class="dropdown-item" onclick="totemplate()"><i class="fa fa-file-alt"></i> Template 1</a>
+
+          <a class="dropdown-item" onclick="totemplate2()"><i class="fa fa-file-alt"></i>
+            Template 2</a>
+
+          <a class="dropdown-item" onclick="totemplate3()"><i class="fa fa-file-alt"></i>
+            Template 3</a>
+
+
+        </div>
+
+      </div>
+
+      <div class="col-md-6" style="text-align: center;">
+        <a href="{% url 'create_edit_chart_of_account' view.id %}" class=" text-dark">
+          <button class="btn btn-outline-warning" title="Edit"><i class="fas fa-edit"></i></button>
+        </a>
+        <a href="mailto:example@example.com" class="text-dark">
+          <button class="btn btn-outline-warning" title="Email"><i class="mdi mdi-email"></i></button>
+      </a>
+      
+      <a href="{% url 'delet_chart' view.id %}" class="  text-dark">
+        <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button>
+      </a>
+        <a class="  text-dark" onclick="exportToPDF()">
+          <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
+        </a>
+        <a class=" text-dark" onclick="printSelectedArea()">
+          <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
+          </button>
+        </a>
+       
+      </div>
+    </div>
+
+
+
+
+
+    <div class="mt-3 template2 whatToPrint2" style="height: auto;width: 100%; margin-left: -1vh">
+
+      <section id="selected-area" style="background-color: rgb(255, 221, 176);height: auto;" class=" p-2 m-2">
+        <header style="	background-color: #8b3131;border-radius: 1rem;">
+          <div class="logo ">
+            <img class="ml-2" width="100rem" style="border-radius: 50%;" src="{% static 'images/zlogo.png' %}"
+              alt="Company Logo">
+          </div>
+          <div style="background: #8b3131;color: white;" class="company-info">
+            <h2 class="text-white">{{company.company_name}}</h2>
+            <p class="text-white"> {{company.address}}<br>{{company.city}}</p>
+            <p> {{company.contact_number}}</p>
+            <p>{{company.company_email}}</p>
+          </div>
+        </header>
+        <div class="invoice-box">
+          <h1 class="text-dark">Chart of Accounts</h1>
+          <div class="invoice-header">
+            <div class="invoice-details text-dark">
+              <table>
+                <tr>
+                  <td class="table-cell text-black" style="border: none;">Account Name</td>
+                  <td class="table-cell text-black" style="border: none;">:</td>
+                  <td class="table-cell text-black" style="border: none;">{{view.account_name}}</td>
+                </tr>
+                <tr>
+                  <td class="table-cell text-black" style="border: none;">Account Type</td>
+                  <td class="table-cell text-black" style="border: none;">:</td>
+                  <td class="table-cell text-black" style="border: none;">{{view.account_type}}</td>
+                </tr>
+                <tr>
+                  <td class="table-cell text-black" style="border: none;">Account Code</td>
+                  <td class="table-cell text-black" style="border: none;">:</td>
+                  <td class="table-cell text-black" style="border: none;">{{view.account_code}}</td>
+                </tr>
+                <tr>
+                  <td class="table-cell text-black" style="border: none;">Status</td>
+                  <td class="table-cell text-black" style="border: none;">:</td>
+                  <td class="table-cell text-black" style="border: none;">{{view.status}}</td>
+                </tr>
+                
+              </table>
+            </div>
+            
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+
+                <th id="th" style="text-align: center;">Account Name</th>
+                <th id="th" style="text-align: center;">Account type</th>
+                <th id="th" style="text-align: center;">Account Code</th>
+                <th id="th" style="text-align: center;">Status</th>
+               
+              </tr>
+            </thead>
+            <tbody>
+              
+              <tr style="color: black;">
+                <td style="text-align: center;">{{view.account_name}}</td>
+                <td style="text-align: center;">{{view.account_type}}</td>
+                <td style="text-align: center;">{{view.account_code}}</td>
+                <td style="text-align: center;">{{view.status}}</td>
+              </tr>
+              
+
+            </tbody>
+          </table><br>
+
+          
+
+        </div>
+
+        <footer class="mb-5">
+          <p class="text-dark">&copy; Zho Books 2023 | Info park kakkanad kochi, Ernamkulam, kerala India 12345
+            | Phone: (123) 456-7890 | Email: info@zohodjango.com</p>
+        </footer>
+      </section>
+    </div>
+  </div>
+
+  <div class="col-md-8" id="templatediv2" style="display: none;">
+    <div class="row">
+      <div class="col-md-7">
+        <a class="text-white" style="font-size: 1.5rem;">
+         
+        </a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <a class="btn" id="overviewbtn" onclick="tooverview()" style="background-color: chocolate; "><i
+            class="fas fa-eye"></i> Overview</a>
+        <a href=" " class=" btn fa fa-file-alt" data-bs-toggle="dropdown" id="attachmentDropdown"
+          aria-haspopup="true" aria-expanded="false"
+          style="background-color: white; color: black; margin-left: 2vh;"> Templates
+        </a>
+
+        <div class="dropdown-menu" aria-labelledby="attachmentDropdown">
+          <a class="dropdown-item" onclick="totemplate()"><i class="fa fa-file-alt"></i> Template 1</a>
+
+          <a class="dropdown-item" onclick="totemplate2()"><i class="fa fa-file-alt"></i>
+            Template 2</a>
+
+          <a class="dropdown-item" onclick="totemplate3()"><i class="fa fa-file-alt"></i>
+            Template 3</a>
+
+
+        </div>
+
+      </div>
+
+      <div class="col-md-6" style="text-align: center;">
+       
+        <a href="{% url 'create_edit_chart_of_account' view.id %}" class=" text-dark">
+          <button class="btn btn-outline-warning" title="Edit"><i class="fas fa-edit"></i></button>
+          <a href="mailto:example@example.com" class="text-dark">
+            <button class="btn btn-outline-warning" title="Email"><i class="mdi mdi-email"></i></button>
+        </a>
+        
+        <a href="{% url 'delet_chart' view.id %}" class="  text-dark">
+          <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button>
+        </a>
+        <a class="  text-dark" onclick="exportToPDF2()">
+          <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
+        </a>
+        <a class=" text-dark" onclick="printSelectedArea2()">
+          <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
+          </button>
+        </a>
+      </div>
+    </div>
+
+
+
+
+
+    <div id="template1" class="printTemplates template1">
+      <div class="my-3 page" style="background-color: rgb(255, 221, 176);" id="selected-area2">
+        <div class="p-5">
+          <div style="background-color: #8b3131;border-radius: 1rem;padding: 20px;">
+            <center class="h3"><b>Chart of Accounts</b></center>
+          </div>
+          <div class="row mt-5">
+            <div class="col-md-8">
+              <h4 class="text-secondary" style="font-weight: bold;">{{company.company_name }}</h4>
+              <p class="address" style="font-weight: bold;color: #000;">
+                {{company.address}}<br>
+                {{company.city}},
+                {{company.state}}<br>
+                {{company.pincode}}<br>
+                {{company.company_email}}<br>
+                {{company.contact_number}}<br>
+              </p>
+            </div>
+            <div class="col-md-4">
+              <div class="top-left">
+                <div class="mt-2">
+                  <p style="color: #000;">Account Name
+                    <b>:{{ view.account_name}}</b>
+                  </p>
+                  <p style="color: #000;">Account Type
+                    <b>:{{ view.account_type}}</b>
+                  </p>
+                  <p style="color: #000;">Account Code
+                    <b>:{{ view.account_code}}</b>
+                  </p>
+                  <p style="color: #000;">Status
+                    <b>:{{ view.status}}</b>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <section class="top-content bb d-flex justify-content-between">
+            <div class="logo">
+
+            </div>
+
+          </section>
+
+          
+
+          <section class="product-area mt-2">
+            <table class="table table-hover table-bordered table-secondary">
+              <thead>
+                <tr class="">
+                  <th class="text-center" style="color:#8b3131;">Account Name</th>
+                  <th class="text-center" style="color:#8b3131;">Account Type</th>
+                  <th class="text-center" style="color:#8b3131;">Account Code</th>
+                  <th class="text-center" style="color:#8b3131;">status</th>
+                 
+                </tr>
+              </thead>
+              <tbody>
+                
+                <tr>
+                  <td class="text-center" style="color:#000">{{ view.account_name }}</td>
+                  <td class="text-center" style="color:#000">{{ view.account_type}}</td>
+                  <td class="text-center" style="color:#000">{{ view.account_code }}</td>
+                  <td class="text-center" style="color:#000">{{ view.status }}</td>
+                  
+                </tr>
+                
+              </tbody>
+            </table>
+          </section>
+
+          <section class="balance-info">
+            
+            <footer class="mb-5">
+              <p class="text-dark">&copy; Zho Books 2023 | Info park kakkanad kochi,
+                Ernamkulam,
+                kerala India 12345
+                | Phone: (123) 456-7890 | Email: info@zohodjango.com</p>
+            </footer>
+          </section>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="col-md-8" id="templatediv3" style="display: none;">
+    <div class="row">
+      <div class="col-md-7">
+        <a class="text-white" style="font-size: 1.5rem;">
+          
+        </a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <a class="btn" id="overviewbtn" onclick="tooverview()" style="background-color: chocolate;"><i
+            class="fas fa-eye"></i> Overview</a>
+        <a href=" " class=" btn fa fa-file-alt" data-bs-toggle="dropdown" id="attachmentDropdown"
+          aria-haspopup="true" aria-expanded="false"
+          style="background-color: white; color: black; margin-left: 2vh;"> Templates
+        </a>
+
+        <div class="dropdown-menu" aria-labelledby="attachmentDropdown">
+          <a class="dropdown-item" onclick="totemplate()"><i class="fa fa-file-alt"></i> Template 1</a>
+
+          <a class="dropdown-item" onclick="totemplate2()"><i class="fa fa-file-alt"></i>
+            Template 2</a>
+
+          <a class="dropdown-item" onclick="totemplate3()"><i class="fa fa-file-alt"></i>
+            Template 3</a>
+
+
+        </div>
+
+      </div>
+
+      <div class="col-md-6" style="text-align: center;">
+       
+        <a href="{% url 'create_edit_chart_of_account' view.id %}" class=" text-dark">
+          <button class="btn btn-outline-warning" title="Edit"><i class="fas fa-edit"></i></button>
+        </a>
+        <a href="mailto:example@example.com" class="text-dark">
+          <button class="btn btn-outline-warning" title="Email"><i class="mdi mdi-email"></i></button>
+      </a>
+      
+      <a href="{% url 'delet_chart' view.id %}" class="  text-dark">
+        <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button>
+      </a>
+        <a class="  text-dark" onclick="exportToPDF3()">
+          <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
+        </a>
+        <a class=" text-dark" onclick="printSelectedArea3()">
+          <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
+          </button>
+        </a>
+      </div>
+    </div>
+
+
+
+
+
+    <div id="template3" class="template3">
+      <div class="my-5 page" size="A4" style="background-color: rgb(255, 221, 176);">
+        <div class="p-5" id="selected-area3">
+          <section class="top-content bb d-flex justify-content-between" style="background-color: #8b3131;">
+            <div class="logo">
+              <!-- <img src="logo.png" alt="" class="img-fluid"> -->
+            </div>
+            <div class="top-left">
+              <div >
+                <p style="font-size:15px;color:white;">Chart of Accounts</p>
+              </div>
+              
+            </div>
+          </section>
+
+          <section class="store-user mt-5">
+            <div class="col-12">
+              <div class="row bb pb-3">
+                <div class="col-7">
+                  <p>FROM,</p>
+                  <h5>{{company.company_name }}</h5>
+                  <p class="address "> {{company.address}}<br>
+                    {{company.city}},
+                    {{company.state}}<br>
+                    {{company.pincode}}<br>
+                  </p>
+
+                </div>
+                <!--<div class="col-5">
+                  <p>TO,</p>
+                  <h5>{{sale.customer.customerName}}</h5>
+                  <p class="address col-9" style="margin-left: 0px;">
+                    {{sale.customer.Address1}} </p><br>
+                  <p class="address col-9">{{sale.customer.GSTTreatment}}</p><br>
+                  <p class="address col-9">{{sale.customer.GSTIN}}</p>
+
+
+                </div>-->
+              </div>
+              <div class="row extra-info pt-3">
+                <div class="col-7">
+                  <p>Account Name
+                    <span>:{{view.account_name}}</span>
+                  </p>
+                  <p>Account Type
+                    <span>:{{view.account_type}}</span>
+                  </p>
+                  <p>Account Code
+                    <span>:{{view.account_code}}</span>
+                  </p>
+                  <p>Status
+                    <span>:{{view.status}}</span>
+                  </p>
+                </div>
+
+              </div>
+            </div>
+          </section>
+
+          <section class="product-area mt-4">
+            <table class=" table table-hover table-bordered " id="table1">
+              <thead>
+                <tr>
+                  <td style="text-align: center; font-weight:bold; color:black ">Account name</td>
+                  <td style="font-weight:bold; color:black">Account type</td>
+                  <td style="font-weight:bold; color:black">Account Code</td>
+                  <td style="font-weight:bold; color:black">Status</td>
+             
+                </tr>
+              </thead>
+              <tbody>
+
+                <tr>
+                  <td style="color:black; text-align: center;">{{view.account_name}}</td>
+                  <td style="color:black">{{view.account_type}}</td>
+                  <td style="color:black">{{view.account_code}}</td>
+                  <td style="color:black">{{view.status}} </td>
+                  
+                </tr>
+                
+              </tbody>
+            </table><br><br>
+          </section>
+
+          <section class="balance-info">
+            <div class="row">
+              
+              
+              <footer class="mb-5">
+                <p class="text-dark">&copy; Zho Books 2023 | Info park kakkanad kochi,
+                  Ernamkulam,
+                  kerala India 12345
+                  | Phone: (123) 456-7890 | Email: info@zohodjango.com</p>
+              </footer>
+            </div>
+          </section>
+
+          <!-- Cart BG -->
+          <img src="cart.jpg" class="img-fluid cart-bg" alt="">
+
+          
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!--<div class="col-sm-8">
+
+    <div class="row  mx-1 py-3 p-3 mb-2 bg-warning">
+      <div class="col-sm-5 text-dark" style="font-size: 2.5rem;">
+        <div class="col-sm-6 ">
+          
+
+          <h4 class="text-dark" style="text-transform: uppercase;">{{ind.account_name}}
+            {% if ind.status == "active" %}
+            <input type="radio" title="active" style="accent-color: rgb(4, 209, 4);" checked readonly>
+            {% else %}
+            <input type="radio" title="inactive" style="accent-color: red;" checked readonly>
+            {% endif %}
+          </h4>
+          <h6 class="text-dark">{{ind.account_type}}</h6>
+
+        </div>
+      </div>
+      <div class="col-sm-7 p-4 text-white text-right my-auto">
+        <div class="btn-group" role="group" aria-label="Basic example">
+          <a href="{% url 'create_edit_chart_of_account' view.id %}" class="btn btn-outline-dark text-right px-3 py-2"
+            title="Edit">
+            <i class="mdi mdi-pencil"></i></a>
+          <a href="" class="btn btn-outline-dark text-right px-3 py-2" data-toggle="modal" data-target="#upload_account"
+            title="Upload" id="pdf">
+            <i class="mdi mdi-file-pdf-box"></i></a>-->
+          <!-- {% if estimate.attachment != ""%} -->
+          <!--<a href="" class="btn btn-outline-dark text-right px-3 py-2" data-toggle="modal"
+            data-target="#download_account" title="Download Attached File">
+            <span class="mdi mdi-download"></span></a>-->
+          <!-- {%endif%} -->
+          <!--<a href="" onclick="printForm()" class="btn btn-outline-dark text-right px-3 py-2" data-toggle="tooltip"
+            title="Print">
+            <i class="mdi mdi-printer"></i></a>
+          <a href="mailto:example@example.com" class="btn btn-outline-dark text-right px-3 py-2"  title="Email">
+            <i class="mdi mdi-email"></i></a>
+
+          <a href="" class="btn btn-outline-dark text-right px-3 py-2"
+            onclick="return confirm('Do you want to Delete this Estimate?');"><i class="mdi mdi-delete"></i></a>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="slip pt-3 p-5 mx-1 convert_to_pdf bg-light" id="selected-area"
+      style="box-shadow: 5px 5px 10px rgb(45, 45, 45);">
+
+
+
+      <hr>
+
+
+      <h4 class="text-dark text-center" style="text-transform: uppercase;">{{ind.account_name}}
+        {% if ind.status == "active" %}
+        <input type="radio" title="active" style="accent-color: rgb(4, 209, 4);" checked readonly>
+        {% else %}
+        <input type="radio" title="inactive" style="accent-color: red;" checked readonly>
+        {% endif %}
+      </h4>
+      <h6 class="text-dark text-center">{{ind.account_type}}</h6><br><br>
+
+
+      <div class="row">
+        <div class="col-sm-6 mt-auto">
+          <h6 class="text-dark">CLOSING BALANCE</h6>
+          <h3 class="text-dark">₹0.00</h3>
+        </div>
+        <div class="col-sm-6  mt-auto" style="text-align: right;">
+          <h6 class="text-dark "></h6>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12 mt-auto">
+          <hr style="color: black;">
+        </div>
+
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12 mt-auto">
+          <h6 class="text-dark">{{ind.description}}</h6>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>-->
+
+
+<!-- .........................................   DOC  UPLOAD   .............................................. -->
+
+<!--<form action="{% url 'upload_chart_of_account' view.id %}" method="POST" enctype="multipart/form-data">
+  {% csrf_token%}
+  <div class="modal" id="upload_account">
+    <div class="modal-dialog modal-dialog-centered " role="document" style="max-width: 600px;">
+      <div class="modal-content p-3" style="background-color: #000000;">
+        <div class="modal-header">
+          <h5 class="modal-title text-info">Document Upload</h5>
+          <button type="button" class="close text-light" data-dismiss="modal" aria-label=""
+            style="font-size: 20px;background-color: #000000;border:none;">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="row mt-4">
+          <div class="col-sm-8">
+
+            <div id="name" style="display: block;">
+              <div class="row mt-3">
+                <div class="col-sm-4">
+                  <label for="">Title:</label>
+                </div>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control text-dark bg-light" name="file_title" id="file_title" required>
+                </div>
+              </div>
+
+            </div>
+
+            
+
+            <div class="row mt-3">
+              <div class="col-sm-4">
+                <label for="">Description:</label>
+              </div>
+              <div class="col-sm-8">
+                <textarea name="description" rows="3" cols="30" class="text-dark bg-light" id="description"
+                  placeholder="Max. 500 characters"></textarea>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-sm-4">
+                <label for="">File Upload:</label>
+              </div>
+              <div class="col-sm-8">
+                <input type="file" name="file" required>
+              </div>
+            </div>
+
+
+          </div>
+
+        </div>
+        <div class="row mt-3">
+          <div class="col-sm-12">
+            <input class="btn btn-success" type="submit" value="Save">
+
+            <input class="btn btn-light ml-3" type="reset" value="Cancel">
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+</form>-->
+
+
+
+
+
+
+
+
+
+
+<!-- .................................  DOC DOWNLOAD  ................................................... -->
+
+<!--<div class="modal" id="download_account">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content modal-xl p-3" style="background-color: #000000;">
+      <div class="modal-header">
+        <h5 class="modal-title text-info">Download Attached Document</h5>
+        <button type="button" class="close text-light" data-dismiss="modal" aria-label=""
+          style="font-size: 20px;background-color: #000000;border:none;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-11 col-lg-11">
+          <table class="table  text-white" id="myTable">
+            <thead>
+              <tr>
+
+                <th>TITLE </th>
+                <th>DESCRIPTION</th>
+                <th>DOCUMENT</th>
+                <th>
+                  ACTION
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for v in doc %}
+
+              <tr id="over">-->
+
+                <!-- <td onclick="location.href ='{% url 'detail' v.id %}' " > {{v.Name}}</td> -->
+                <!--<td>{{ v.title }}</td>
+                <td>{{v.description}}</td>
+                <td>{{ v.document }}</td>
+                <td>
+                  <a href="{% url 'download_chart_of_account' v.id %}" class="btn btn-warning">Download</a>
+                </td>
+
+
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="col-sm-12 col-md-1 col-lg-1"></div>
+
+      </div>
+
+
+
+    </div>
+  </div>
+</div>-->
+
+
+
+<!-- .........................................search function.................................................... -->
+<script>
+  function myyFunction() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("myyInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("MyTable");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[0];
+      if (td) {
+        txtValue = td.textContent || td.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+        }
+        else {
+          tr[i].style.display = "none";
+        }
+      }
+    }
+  }
+</script>
+<script src="https://code.jquery.com/jquery-3.x.x.min.js"></script>
+<script src="path/to/jquery.min.js"></script>
+<script src="path/to/bootstrap.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+  integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+  crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+  integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+  crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+<script>
+  // Add click event listener to all rows with class "clickable-row"
+  const rows = document.querySelectorAll('.clickable-row');
+  rows.forEach(row => {
+    row.addEventListener('click', () => {
+      // Get the URL from the "data-href" attribute
+      const url = row.getAttribute('data-href');
+      // Navigate to the URL
+      window.location.href = url;
+    });
+  });
+</script>
+<script>
+  
+  $(document).ready(function () {
+    $('#share_with_email').on('click', function () {
+      var emailsInput = document.getElementById('emailIds');
+      var emailsString = emailsInput.value.trim();
+
+      var emails = emailsString.split(',').map(function (email) {
+        return email.trim();
+      });
+
+      var emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+
+      var invalidEmails = []
+      if (emailsString == "") {
+        alert('Enter valid email addresses..')
+      }
+      else {
+        for (var i = 0; i < emails.length; i++) {
+          var currentEmail = emails[i];
+
+          if (currentEmail != "" && !emailRegex.test(currentEmail)) {
+            console.log(currentEmail + ' is invalid!');
+            invalidEmails.push(currentEmail)
+          }
+        }
+
+        if (invalidEmails.length > 0) {
+          alert('Invalid emails..Please check!\n' + invalidEmails)
+          // alert(invalidEmails)
+        } else {
+          $('#share_to_email_form').submit();
+        }
+      }
+    })
+  });
+
+
+  function shareOnWhatsApp() {
+    var url = window.location.href;
+    var text = url;
+    text = encodeURIComponent(text);
+    var whatsappUrl = "whatsapp://send?text=" + text;
+    window.location.href = whatsappUrl;
+  }
+
+  function exportToPDF() {
+    var content = document.getElementById('selected-area');
+    html2pdf()
+      .from(content)
+      .save('{{sale.sales_no}}' + '.pdf')
+  }
+  function exportToPDF2() {
+    var content = document.getElementById('selected-area2');
+    html2pdf()
+      .from(content)
+      .save('{{sale.sales_no}}' + '.pdf')
+  }
+  function exportToPDF3() {
+    var content = document.getElementById('selected-area3');
+    html2pdf()
+      .from(content)
+      .save('{{sale.sales_no}}' + '.pdf')
+  }
+  function exportToPDF4() {
+    var content = document.getElementById('printslip');
+    html2pdf()
+      .from(content)
+      .save('{{sale.sales_no}}' + '.pdf')
+  }
+
+</script>
+
+<script>
+  function printSelectedArea(area) {
+
+    var printContents = document.getElementById("selected-area").innerHTML;
+    document.getElementById("selected-area").style.backgroundColor = "white"
+    var $printerDiv = $('<div class="printContainer bg-white"></div>'); // create the div that will contain the stuff to be printed
+    $printerDiv.html(printContents); // add the content to be printed
+    $('body').append($printerDiv).addClass("printingContent"); // add the div to body, and make the body aware of printing (we apply a set of css styles to the body to hide its contents)
+
+    window.print(); // call print
+    $printerDiv.remove(); // remove the div
+    $('body').removeClass("printingContent");
+
+  }
+
+  function printSelectedArea2(area) {
+
+    var printContents = document.getElementById("selected-area2").innerHTML;
+    document.getElementById("selected-area2").style.backgroundColor = "white"
+    var $printerDiv = $('<div class="printContainer bg-white"></div>'); // create the div that will contain the stuff to be printed
+    $printerDiv.html(printContents); // add the content to be printed
+    $('body').append($printerDiv).addClass("printingContent"); // add the div to body, and make the body aware of printing (we apply a set of css styles to the body to hide its contents)
+
+    window.print(); // call print
+    $printerDiv.remove(); // remove the div
+    $('body').removeClass("printingContent");
+
+  }
+  function printSelectedArea3(area) {
+
+    var printContents = document.getElementById("selected-area3").innerHTML;
+    document.getElementById("selected-area3").style.backgroundColor = "white"
+    var $printerDiv = $('<div class="printContainer bg-white"></div>'); // create the div that will contain the stuff to be printed
+    $printerDiv.html(printContents); // add the content to be printed
+    $('body').append($printerDiv).addClass("printingContent"); // add the div to body, and make the body aware of printing (we apply a set of css styles to the body to hide its contents)
+
+    window.print(); // call print
+    $printerDiv.remove(); // remove the div
+    $('body').removeClass("printingContent");
+
+  }
+  function printSelectedArea4(area) {
+
+    var printContents = document.getElementById("printslip").innerHTML;
+    document.getElementById("printslip").style.backgroundColor = "white"
+    var $printerDiv = $('<div class="printContainer bg-white"></div>'); // create the div that will contain the stuff to be printed
+    $printerDiv.html(printContents); // add the content to be printed
+    $('body').append($printerDiv).addClass("printingContent"); // add the div to body, and make the body aware of printing (we apply a set of css styles to the body to hide its contents)
+
+    window.print(); // call print
+    $printerDiv.remove(); // remove the div
+    $('body').removeClass("printingContent");
+
+  }
+</script>
+
+<script>
+
+  const rows = document.querySelectorAll('.clickable');
+
+  rows.forEach(row => {
+    row.addEventListener('click', () => {
+      var currentURL = window.location.href
+      const rowId = row.id;
+      var newURL = currentURL.replace(/\d+$/, rowId);
+      window.location.href = newURL;
+    });
+  });
+
+
+
+
+
+</script>
+
+<script>
+
+
+  function totemplate() {
+    document.getElementById('templatediv').style.display = 'block'
+    document.getElementById('overviewdiv').style.display = 'none'
+    document.getElementById('templatediv2').style.display = 'none'
+    document.getElementById('templatediv3').style.display = 'none'
+    document.getElementById('slipdiv').style.display = 'none'
+
+  }
+  function totemplate2() {
+    document.getElementById('templatediv').style.display = 'none'
+    document.getElementById('templatediv2').style.display = 'block'
+    document.getElementById('templatediv3').style.display = 'none'
+    document.getElementById('overviewdiv').style.display = 'none'
+    document.getElementById('slipdiv').style.display = 'none'
+
+  }
+  function totemplate3() {
+    document.getElementById('templatediv').style.display = 'none'
+    document.getElementById('templatediv2').style.display = 'none'
+    document.getElementById('templatediv3').style.display = 'block'
+    document.getElementById('overviewdiv').style.display = 'none'
+    document.getElementById('slipdiv').style.display = 'none'
+  }
+  function tooverview() {
+    document.getElementById('templatediv').style.display = 'none'
+    document.getElementById('overviewdiv').style.display = 'block'
+    document.getElementById('templatediv2').style.display = 'none'
+    document.getElementById('templatediv3').style.display = 'none'
+    document.getElementById('slipdiv').style.display = 'none'
+  }
+  function show_slip() {
+    document.getElementById('templatediv').style.display = 'none'
+    document.getElementById('overviewdiv').style.display = 'none'
+    document.getElementById('templatediv2').style.display = 'none'
+    document.getElementById('templatediv3').style.display = 'none'
+    document.getElementById('slipdiv').style.display = 'block'
+  }
+</script>
+
+
+
+
+{% endblock %}

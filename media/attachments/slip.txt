@@ -1,0 +1,117 @@
+<!-- Bill Slip view -->
+
+                        <div class="saleBillSlip" id="printSlip" style="display: none;">
+                            <div class="slip-container bg-light" id="slip_container">
+                                <div class="slip">
+                                    <h5 class="fw-bold text-center">{{cmp.company_name}}</h5>
+                                    <div class="address text-center">
+                                        <p>{{cmp.address}}</p>
+                                        <p>{{cmp.state}}, {{cmp.country}}</p>
+                                        <p>{{cmp.phone_number}}</p>
+                                        <p>GSTIN: {{cmp.gst_number}}</p>
+                                    </div>
+                                    <div class="divider">
+                                    </div>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-start" style="border-bottom-width: 0px !important;">Item</th>
+                                                <!-- <th class="text-center">Rate</th>
+                                                <th class="text-center">Quantity</th> -->
+                                                <th class="text-end" style="border-bottom-width: 0px !important;">Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for itm in items %}
+                                                <tr>
+                                                    <td style="border-bottom-width: 0px !important;" class="text-start">{{ itm.name }}</td>
+                                                    <!-- <td class="text-center">{{ itm.rate  }}</td>
+                                                    <td class="text-center">{{ itm.quantity }}</td> -->
+                                                    <td style="border-bottom-width: 0px !important;" class="text-end"><span>&#8377; </span>{{ itm.total }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                    
+                    
+                    
+                                    <div class="subtot mt-5">
+                                        <div class="subtot-item d-flex justify-content-between">
+                                            <span>Subtotal</span>
+                                            <span><span>&#8377; </span>{{bill.subtotal}}</span>
+                                        </div>
+                                        <div class="subtot-item d-flex justify-content-between">
+                                            <span>Tax</span>
+                                            <span><span>&#8377; </span>{{bill.tax}}</span>
+                                        </div>
+                                        {% if bill.adjustment != 0.0 %}
+                                        <div class="subtot-item d-flex justify-content-between">
+                                            <span>Adjustment</span>
+                                            <span><span>&#8377; </span>{{bill.adjustment}}</span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="divider"></div>
+                                    <div class="grandtot fw-bold d-flex justify-content-between">
+                                        <span><strong>TOTAL</strong></span>
+                                        <span><strong><span>&#8377; </span>{{bill.total_amount}}</strong></span>
+                                    </div>
+                                    <div class="divider"></div>
+                                    <div class="paid-by mb-4 d-flex justify-content-between">
+                                        <span>Paid By:</span>
+                                        <span>Credit</span>
+                                    </div>
+                                    <div class="datetime d-flex justify-content-start">
+                                        <p class="">{% now "d/m/Y g:i A" %}</p>
+                                    </div>
+                                    <div class="trns-id d-flex flex-column">
+                                        <div>
+                                            <p class="float-start">
+                                                <span>Transaction ID:</span>
+                                                <span>XXXXXXXXX</span>
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p class="float-start">
+                                                <span>Vendor ID:</span>
+                                                <span>XXXXXXXXXX</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="footer mt-4 text-center">
+                                        <p>Thank you for supporting Local business!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+/* SLIP VIEW STYLINGS */
+    .slip h5{
+        font-family: serif;
+    }
+    p {
+        font-size: 1.2em;
+    }
+    .address{
+        display: flex;
+        flex-direction: column;
+    }
+    .address p,.footer p{
+        font-size: 1rem;
+        margin: 0;
+    }
+    .slip-container{
+        width: 80mm;
+        margin: 2rem auto;
+        padding: 2rem;
+        box-shadow: rgba(60, 64, 67, 0.5) 0px 1px 2px 0px, rgba(60, 64, 67, 0.35) 0px 2px 6px 2px;
+    }
+    .divider{
+        margin: 1rem 0;
+        border-bottom: 3px dotted black;
+    }
+    .trns-id p,.datetime p{
+        font-size: 0.85rem;
+        margin: 0;
+    }
