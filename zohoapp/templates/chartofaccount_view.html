@@ -814,8 +814,8 @@
 
     </div>
   </div>
-
-  <div class="col-md-8 ml-1  mb-5 " id="overviewdiv">
+  
+  <div class="col-md-8" id="overviewdiv">
     <div class="row">
       <div class="col-md-7">
         <a class="text-white" style="font-size: 1.5rem;">
@@ -825,45 +825,64 @@
     </div>
     <div class="row">
       <div class="col-md-6">
-        <a class="btn" style="background-color: chocolate; margin-right: 2vh;"><i class="fas fa-eye"></i>
-          Overview</a>
-        <a href=" " class=" btn fa fa-file-alt" data-bs-toggle="dropdown" id="attachmentDropdown"
-          aria-haspopup="true" aria-expanded="false"
-          style="background-color: white; color: black; margin-right: 2vh;"> Templates
+        <a class="btn" style="background-color: chocolate; margin-right: 2vh;">
+          <i class="fas fa-eye"></i> Overview
         </a>
-        <div class="dropdown-menu" aria-labelledby="attachmentDropdown">
-          <a class="dropdown-item" onclick="totemplate()"><i class="fa fa-file-alt"></i> Template 1</a>
-
-          <a class="dropdown-item" onclick="totemplate2()"><i class="fa fa-file-alt"></i>
-            Template 2</a>
-
-          <a class="dropdown-item" onclick="totemplate3()"><i class="fa fa-file-alt"></i>
-            Template 3</a>
-
-
-        </div>
-
       </div>
-
-      <div class="col-md-6" style="text-align: center;">
-        <a href="{% url 'create_edit_chart_of_account' view.id %}" class="text-dark">
-          <button class="btn btn-outline-warning">
-            <i class="fa fa-edit"></i>
-          </button>
+    
+      <div class="col-md-6" style="text-align: right;">
+        <a href="{% url 'create_edit_chart_of_account' view.id %}" class="btn btn-outline-warning text-right px-2 py-2" title="Edit">
+          <i class="mdi mdi-pencil"></i>
+        </a>
+        <a href="#" class="btn btn-outline-warning text-right px-2 py-2" data-toggle="modal" data-target="#upload_account"
+          title="Upload" id="pdf">
+          <i class="mdi mdi-file-pdf-box"></i>
         </a>
     
-      <a href="mailto:example@example.com" class="text-dark">
-        <button class="btn btn-outline-warning" title="Email"><i class="mdi mdi-email"></i></button>
-    </a>
-    
-    <a href="{% url 'delet_chart' view.id %}" class="  text-dark">
-      <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button></a>
-        <a class="  text-dark" onclick="exportToPDF()">
-          <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
+        <!-- {% if estimate.attachment != ""%} -->
+        <a href="#" class="btn btn-outline-warning text-right px-2 py-2" data-toggle="modal"
+          data-target="#download_account" title="Download Attached File">
+          <span class="mdi mdi-download"></span>
         </a>
-        <a class=" text-dark" onclick="printSelectedArea()">
-          <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
-          </button>
+        <!-- {%endif%} -->
+    
+        <a href="#" id="pdf" onclick="adjustTableForPrint()" class="btn btn-outline-warning text-right px-2 py-2" data-toggle="tooltip" title="Print">
+          <i class="mdi mdi-printer"></i>
+        </a>
+        
+        <script>
+          function adjustTableForPrint() {
+            const contentToPrint = document.getElementById('div-to-pdf'); // Adjust this ID based on your HTML structure
+            const container = document.body.appendChild(document.createElement("div"));
+            container.appendChild(contentToPrint.cloneNode(true));
+        
+            // Optional: Add additional styles for printing
+            container.style.position = 'absolute';
+            container.style.left = '-9999px';
+        
+            // Adjust the table for printing
+            const scaleFactor = container.offsetWidth / contentToPrint.offsetWidth;
+            contentToPrint.style.transform = `scale(${scaleFactor})`;
+            contentToPrint.style.transformOrigin = 'top left';
+        
+            const marginTop = (container.offsetHeight - contentToPrint.offsetHeight * scaleFactor) / 2;
+            contentToPrint.style.marginTop = `${marginTop}px`;
+        
+            // Print the adjusted content
+            window.print();
+        
+            // Clean up after printing
+            document.body.removeChild(container);
+          }
+        </script>
+        
+        <a href="mailto:example@example.com" class="btn btn-outline-warning text-right px-2 py-2" title="Email">
+          <i class="mdi mdi-email"></i>
+        </a>
+    
+        <a href="{% url 'delet_chart' view.id %}" class="btn btn-outline-warning text-right px-2 py-2"
+          onclick="return confirm('Do you want to Delete this Estimate?');">
+          <i class="mdi mdi-delete"></i>
         </a>
       </div>
     </div><br>
@@ -958,451 +977,7 @@
 
  
 
-  <div class="col-md-8" id="templatediv" style="display: none;">
-    <div class="row">
-      <div class="col-md-7">
-        <a class="text-white" style="font-size: 1.5rem;">
-          
-        </a>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-6">
-        <a class="btn" id="overviewbtn" onclick="tooverview()" style="background-color: chocolate; "><i
-            class="fas fa-eye"></i> Overview</a>
-        <a href=" " class=" btn fa fa-file-alt" data-bs-toggle="dropdown" id="attachmentDropdown"
-          aria-haspopup="true" aria-expanded="false"
-          style="background-color: white; color: black; margin-left: 2vh;"> Templates
-        </a>
 
-        <div class="dropdown-menu" aria-labelledby="attachmentDropdown">
-          <a class="dropdown-item" onclick="totemplate()"><i class="fa fa-file-alt"></i> Template 1</a>
-
-          <a class="dropdown-item" onclick="totemplate2()"><i class="fa fa-file-alt"></i>
-            Template 2</a>
-
-          <a class="dropdown-item" onclick="totemplate3()"><i class="fa fa-file-alt"></i>
-            Template 3</a>
-
-
-        </div>
-
-      </div>
-
-      <div class="col-md-6" style="text-align: center;">
-        <a href="{% url 'create_edit_chart_of_account' view.id %}" class=" text-dark">
-          <button class="btn btn-outline-warning" title="Edit"><i class="fas fa-edit"></i></button>
-        </a>
-        <a href="mailto:example@example.com" class="text-dark">
-          <button class="btn btn-outline-warning" title="Email"><i class="mdi mdi-email"></i></button>
-      </a>
-      
-      <a href="{% url 'delet_chart' view.id %}" class="  text-dark">
-        <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button>
-      </a>
-        <a class="  text-dark" onclick="exportToPDF()">
-          <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
-        </a>
-        <a class=" text-dark" onclick="printSelectedArea()">
-          <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
-          </button>
-        </a>
-       
-      </div>
-    </div>
-
-
-
-
-
-    <div class="mt-3 template2 whatToPrint2" style="height: auto;width: 100%; margin-left: -1vh">
-
-      <section id="selected-area" style="background-color: rgb(255, 221, 176);height: auto;" class=" p-2 m-2">
-        <header style="	background-color: #8b3131;border-radius: 1rem;">
-          <div class="logo ">
-            <img class="ml-2" width="100rem" style="border-radius: 50%;" src="{% static 'images/zlogo.png' %}"
-              alt="Company Logo">
-          </div>
-          <div style="background: #8b3131;color: white;" class="company-info">
-            <h2 class="text-white">{{company.company_name}}</h2>
-            <p class="text-white"> {{company.address}}<br>{{company.city}}</p>
-            <p> {{company.contact_number}}</p>
-            <p>{{company.company_email}}</p>
-          </div>
-        </header>
-        <div class="invoice-box">
-          <h1 class="text-dark">Chart of Accounts</h1>
-          <div class="invoice-header">
-            <div class="invoice-details text-dark">
-              <table>
-                <tr>
-                  <td class="table-cell text-black" style="border: none;">Account Name</td>
-                  <td class="table-cell text-black" style="border: none;">:</td>
-                  <td class="table-cell text-black" style="border: none;">{{view.account_name}}</td>
-                </tr>
-                <tr>
-                  <td class="table-cell text-black" style="border: none;">Account Type</td>
-                  <td class="table-cell text-black" style="border: none;">:</td>
-                  <td class="table-cell text-black" style="border: none;">{{view.account_type}}</td>
-                </tr>
-                <tr>
-                  <td class="table-cell text-black" style="border: none;">Account Code</td>
-                  <td class="table-cell text-black" style="border: none;">:</td>
-                  <td class="table-cell text-black" style="border: none;">{{view.account_code}}</td>
-                </tr>
-                <tr>
-                  <td class="table-cell text-black" style="border: none;">Status</td>
-                  <td class="table-cell text-black" style="border: none;">:</td>
-                  <td class="table-cell text-black" style="border: none;">{{view.status}}</td>
-                </tr>
-                
-              </table>
-            </div>
-            
-          </div>
-
-          <table>
-            <thead>
-              <tr>
-
-                <th id="th" style="text-align: center;">Account Name</th>
-                <th id="th" style="text-align: center;">Account type</th>
-                <th id="th" style="text-align: center;">Account Code</th>
-                <th id="th" style="text-align: center;">Status</th>
-               
-              </tr>
-            </thead>
-            <tbody>
-              
-              <tr style="color: black;">
-                <td style="text-align: center;">{{view.account_name}}</td>
-                <td style="text-align: center;">{{view.account_type}}</td>
-                <td style="text-align: center;">{{view.account_code}}</td>
-                <td style="text-align: center;">{{view.status}}</td>
-              </tr>
-              
-
-            </tbody>
-          </table><br>
-
-          
-
-        </div>
-
-        <footer class="mb-5">
-          <p class="text-dark">&copy; Zho Books 2023 | Info park kakkanad kochi, Ernamkulam, kerala India 12345
-            | Phone: (123) 456-7890 | Email: info@zohodjango.com</p>
-        </footer>
-      </section>
-    </div>
-  </div>
-
-  <div class="col-md-8" id="templatediv2" style="display: none;">
-    <div class="row">
-      <div class="col-md-7">
-        <a class="text-white" style="font-size: 1.5rem;">
-         
-        </a>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-6">
-        <a class="btn" id="overviewbtn" onclick="tooverview()" style="background-color: chocolate; "><i
-            class="fas fa-eye"></i> Overview</a>
-        <a href=" " class=" btn fa fa-file-alt" data-bs-toggle="dropdown" id="attachmentDropdown"
-          aria-haspopup="true" aria-expanded="false"
-          style="background-color: white; color: black; margin-left: 2vh;"> Templates
-        </a>
-
-        <div class="dropdown-menu" aria-labelledby="attachmentDropdown">
-          <a class="dropdown-item" onclick="totemplate()"><i class="fa fa-file-alt"></i> Template 1</a>
-
-          <a class="dropdown-item" onclick="totemplate2()"><i class="fa fa-file-alt"></i>
-            Template 2</a>
-
-          <a class="dropdown-item" onclick="totemplate3()"><i class="fa fa-file-alt"></i>
-            Template 3</a>
-
-
-        </div>
-
-      </div>
-
-      <div class="col-md-6" style="text-align: center;">
-       
-        <a href="{% url 'create_edit_chart_of_account' view.id %}" class=" text-dark">
-          <button class="btn btn-outline-warning" title="Edit"><i class="fas fa-edit"></i></button>
-          <a href="mailto:example@example.com" class="text-dark">
-            <button class="btn btn-outline-warning" title="Email"><i class="mdi mdi-email"></i></button>
-        </a>
-        
-        <a href="{% url 'delet_chart' view.id %}" class="  text-dark">
-          <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button>
-        </a>
-        <a class="  text-dark" onclick="exportToPDF2()">
-          <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
-        </a>
-        <a class=" text-dark" onclick="printSelectedArea2()">
-          <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
-          </button>
-        </a>
-      </div>
-    </div>
-
-
-
-
-
-    <div id="template1" class="printTemplates template1">
-      <div class="my-3 page" style="background-color: rgb(255, 221, 176);" id="selected-area2">
-        <div class="p-5">
-          <div style="background-color: #8b3131;border-radius: 1rem;padding: 20px;">
-            <center class="h3"><b>Chart of Accounts</b></center>
-          </div>
-          <div class="row mt-5">
-            <div class="col-md-8">
-              <h4 class="text-secondary" style="font-weight: bold;">{{company.company_name }}</h4>
-              <p class="address" style="font-weight: bold;color: #000;">
-                {{company.address}}<br>
-                {{company.city}},
-                {{company.state}}<br>
-                {{company.pincode}}<br>
-                {{company.company_email}}<br>
-                {{company.contact_number}}<br>
-              </p>
-            </div>
-            <div class="col-md-4">
-              <div class="top-left">
-                <div class="mt-2">
-                  <p style="color: #000;">Account Name
-                    <b>:{{ view.account_name}}</b>
-                  </p>
-                  <p style="color: #000;">Account Type
-                    <b>:{{ view.account_type}}</b>
-                  </p>
-                  <p style="color: #000;">Account Code
-                    <b>:{{ view.account_code}}</b>
-                  </p>
-                  <p style="color: #000;">Status
-                    <b>:{{ view.status}}</b>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <section class="top-content bb d-flex justify-content-between">
-            <div class="logo">
-
-            </div>
-
-          </section>
-
-          
-
-          <section class="product-area mt-2">
-            <table class="table table-hover table-bordered table-secondary">
-              <thead>
-                <tr class="">
-                  <th class="text-center" style="color:#8b3131;">Account Name</th>
-                  <th class="text-center" style="color:#8b3131;">Account Type</th>
-                  <th class="text-center" style="color:#8b3131;">Account Code</th>
-                  <th class="text-center" style="color:#8b3131;">status</th>
-                 
-                </tr>
-              </thead>
-              <tbody>
-                
-                <tr>
-                  <td class="text-center" style="color:#000">{{ view.account_name }}</td>
-                  <td class="text-center" style="color:#000">{{ view.account_type}}</td>
-                  <td class="text-center" style="color:#000">{{ view.account_code }}</td>
-                  <td class="text-center" style="color:#000">{{ view.status }}</td>
-                  
-                </tr>
-                
-              </tbody>
-            </table>
-          </section>
-
-          <section class="balance-info">
-            
-            <footer class="mb-5">
-              <p class="text-dark">&copy; Zho Books 2023 | Info park kakkanad kochi,
-                Ernamkulam,
-                kerala India 12345
-                | Phone: (123) 456-7890 | Email: info@zohodjango.com</p>
-            </footer>
-          </section>
-
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="col-md-8" id="templatediv3" style="display: none;">
-    <div class="row">
-      <div class="col-md-7">
-        <a class="text-white" style="font-size: 1.5rem;">
-          
-        </a>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-6">
-        <a class="btn" id="overviewbtn" onclick="tooverview()" style="background-color: chocolate;"><i
-            class="fas fa-eye"></i> Overview</a>
-        <a href=" " class=" btn fa fa-file-alt" data-bs-toggle="dropdown" id="attachmentDropdown"
-          aria-haspopup="true" aria-expanded="false"
-          style="background-color: white; color: black; margin-left: 2vh;"> Templates
-        </a>
-
-        <div class="dropdown-menu" aria-labelledby="attachmentDropdown">
-          <a class="dropdown-item" onclick="totemplate()"><i class="fa fa-file-alt"></i> Template 1</a>
-
-          <a class="dropdown-item" onclick="totemplate2()"><i class="fa fa-file-alt"></i>
-            Template 2</a>
-
-          <a class="dropdown-item" onclick="totemplate3()"><i class="fa fa-file-alt"></i>
-            Template 3</a>
-
-
-        </div>
-
-      </div>
-
-      <div class="col-md-6" style="text-align: center;">
-       
-        <a href="{% url 'create_edit_chart_of_account' view.id %}" class=" text-dark">
-          <button class="btn btn-outline-warning" title="Edit"><i class="fas fa-edit"></i></button>
-        </a>
-        <a href="mailto:example@example.com" class="text-dark">
-          <button class="btn btn-outline-warning" title="Email"><i class="mdi mdi-email"></i></button>
-      </a>
-      
-      <a href="{% url 'delet_chart' view.id %}" class="  text-dark">
-        <button class="btn btn-outline-warning" title="Delete"><i class="fas fa-trash-alt"></i></button>
-      </a>
-        <a class="  text-dark" onclick="exportToPDF3()">
-          <button class="btn btn-outline-warning" title="Pdf"><i class="fas fa-file-pdf-o"></i></button>
-        </a>
-        <a class=" text-dark" onclick="printSelectedArea3()">
-          <button class="btn btn-outline-warning" title="Print"><i class="fas fa-print"></i>
-          </button>
-        </a>
-      </div>
-    </div>
-
-
-
-
-
-    <div id="template3" class="template3">
-      <div class="my-5 page" size="A4" style="background-color: rgb(255, 221, 176);">
-        <div class="p-5" id="selected-area3">
-          <section class="top-content bb d-flex justify-content-between" style="background-color: #8b3131;">
-            <div class="logo">
-              <!-- <img src="logo.png" alt="" class="img-fluid"> -->
-            </div>
-            <div class="top-left">
-              <div >
-                <p style="font-size:15px;color:white;">Chart of Accounts</p>
-              </div>
-              
-            </div>
-          </section>
-
-          <section class="store-user mt-5">
-            <div class="col-12">
-              <div class="row bb pb-3">
-                <div class="col-7">
-                  <p>FROM,</p>
-                  <h5>{{company.company_name }}</h5>
-                  <p class="address "> {{company.address}}<br>
-                    {{company.city}},
-                    {{company.state}}<br>
-                    {{company.pincode}}<br>
-                  </p>
-
-                </div>
-                <!--<div class="col-5">
-                  <p>TO,</p>
-                  <h5>{{sale.customer.customerName}}</h5>
-                  <p class="address col-9" style="margin-left: 0px;">
-                    {{sale.customer.Address1}} </p><br>
-                  <p class="address col-9">{{sale.customer.GSTTreatment}}</p><br>
-                  <p class="address col-9">{{sale.customer.GSTIN}}</p>
-
-
-                </div>-->
-              </div>
-              <div class="row extra-info pt-3">
-                <div class="col-7">
-                  <p>Account Name
-                    <span>:{{view.account_name}}</span>
-                  </p>
-                  <p>Account Type
-                    <span>:{{view.account_type}}</span>
-                  </p>
-                  <p>Account Code
-                    <span>:{{view.account_code}}</span>
-                  </p>
-                  <p>Status
-                    <span>:{{view.status}}</span>
-                  </p>
-                </div>
-
-              </div>
-            </div>
-          </section>
-
-          <section class="product-area mt-4">
-            <table class=" table table-hover table-bordered " id="table1">
-              <thead>
-                <tr>
-                  <td style="text-align: center; font-weight:bold; color:black ">Account name</td>
-                  <td style="font-weight:bold; color:black">Account type</td>
-                  <td style="font-weight:bold; color:black">Account Code</td>
-                  <td style="font-weight:bold; color:black">Status</td>
-             
-                </tr>
-              </thead>
-              <tbody>
-
-                <tr>
-                  <td style="color:black; text-align: center;">{{view.account_name}}</td>
-                  <td style="color:black">{{view.account_type}}</td>
-                  <td style="color:black">{{view.account_code}}</td>
-                  <td style="color:black">{{view.status}} </td>
-                  
-                </tr>
-                
-              </tbody>
-            </table><br><br>
-          </section>
-
-          <section class="balance-info">
-            <div class="row">
-              
-              
-              <footer class="mb-5">
-                <p class="text-dark">&copy; Zho Books 2023 | Info park kakkanad kochi,
-                  Ernamkulam,
-                  kerala India 12345
-                  | Phone: (123) 456-7890 | Email: info@zohodjango.com</p>
-              </footer>
-            </div>
-          </section>
-
-          <!-- Cart BG -->
-          <img src="cart.jpg" class="img-fluid cart-bg" alt="">
-
-          
-        </div>
-      </div>
-    </div>
-
-  </div>
 
 
 
@@ -1508,73 +1083,7 @@
 </div>-->
 
 
-<!-- .........................................   DOC  UPLOAD   .............................................. -->
 
-<!--<form action="{% url 'upload_chart_of_account' view.id %}" method="POST" enctype="multipart/form-data">
-  {% csrf_token%}
-  <div class="modal" id="upload_account">
-    <div class="modal-dialog modal-dialog-centered " role="document" style="max-width: 600px;">
-      <div class="modal-content p-3" style="background-color: #000000;">
-        <div class="modal-header">
-          <h5 class="modal-title text-info">Document Upload</h5>
-          <button type="button" class="close text-light" data-dismiss="modal" aria-label=""
-            style="font-size: 20px;background-color: #000000;border:none;">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-
-        <div class="row mt-4">
-          <div class="col-sm-8">
-
-            <div id="name" style="display: block;">
-              <div class="row mt-3">
-                <div class="col-sm-4">
-                  <label for="">Title:</label>
-                </div>
-                <div class="col-sm-8">
-                  <input type="text" class="form-control text-dark bg-light" name="file_title" id="file_title" required>
-                </div>
-              </div>
-
-            </div>
-
-            
-
-            <div class="row mt-3">
-              <div class="col-sm-4">
-                <label for="">Description:</label>
-              </div>
-              <div class="col-sm-8">
-                <textarea name="description" rows="3" cols="30" class="text-dark bg-light" id="description"
-                  placeholder="Max. 500 characters"></textarea>
-              </div>
-            </div>
-            <div class="row mt-3">
-              <div class="col-sm-4">
-                <label for="">File Upload:</label>
-              </div>
-              <div class="col-sm-8">
-                <input type="file" name="file" required>
-              </div>
-            </div>
-
-
-          </div>
-
-        </div>
-        <div class="row mt-3">
-          <div class="col-sm-12">
-            <input class="btn btn-success" type="submit" value="Save">
-
-            <input class="btn btn-light ml-3" type="reset" value="Cancel">
-          </div>
-        </div>
-
-
-      </div>
-    </div>
-  </div>
-</form>-->
 
 
 
@@ -1587,7 +1096,7 @@
 
 <!-- .................................  DOC DOWNLOAD  ................................................... -->
 
-<!--<div class="modal" id="download_account">
+<div class="modal" id="download_account">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
     <div class="modal-content modal-xl p-3" style="background-color: #000000;">
       <div class="modal-header">
@@ -1614,10 +1123,10 @@
             <tbody>
               {% for v in doc %}
 
-              <tr id="over">-->
+              <tr id="over">
 
                 <!-- <td onclick="location.href ='{% url 'detail' v.id %}' " > {{v.Name}}</td> -->
-                <!--<td>{{ v.title }}</td>
+                <td>{{ v.title }}</td>
                 <td>{{v.description}}</td>
                 <td>{{ v.document }}</td>
                 <td>
@@ -1638,7 +1147,7 @@
 
     </div>
   </div>
-</div>-->
+</div>
 
 
 

@@ -222,23 +222,79 @@ tr:hover{
 
                       <div class="row mt-3 mb-5">
                         <div class="col-md-3">
-                          <label for="prof_name">Journal No:</label>
+                            <label for="prof_name">Journal No:</label>
                         </div>
                         <div class="col-md-6">
-                          <input  type="text"  name="journal_no" class="form-control text-dark" required id="journalNoInput">
-              <div id="validationMessage" class="text-warning"></div>  <!--Validation message element -->
+                            <input type="text" name="journal_no" class="form-control text-dark" required id="journalNoInput" oninput="generateReferenceNumber()">
+                            <div id="validationMessage" class="text-warning"></div> <!-- Validation message element -->
                         </div>
-                      </div>
-                      <div class="row mt-2">
+                    </div>
+                    
+                    <div class="row mt-2">
                         <div class="col-md-3">
-                          <label for="">Reference No:</label>
+                            <label for="reference_no">Reference No:</label>
                         </div>
                         <div class="col-md-6">
-                          <input type="text" name="reference_no" class="form-control text-dark" id="referenceNumber">
+                            <input type="text" name="reference_no" class="form-control text-dark" id="referenceNumber" readonly>
                         </div>
-                      </div>
-                      
-                      
+                    </div>
+                    
+                    <script>
+                        function generateReferenceNumber() {
+                            // Get the journal number input value
+                            var journalNumber = document.getElementById('journalNoInput').value;
+                    
+                            // Retrieve the last entered journal number and reference number from the table
+                            var lastJournalNumber = getLastJournalNumberFromTable();
+                            var lastReferenceNumber = getLastReferenceNumberFromTable();
+                    
+                            // Check if the entered journal number is valid and continuous
+                            if (isValidJournalNumber(journalNumber, lastJournalNumber)) {
+                                // Increment the reference number
+                                var referenceNumber = lastReferenceNumber + 1;
+                    
+                                // Set the generated reference number to the readonly input field
+                                document.getElementById('referenceNumber').value = referenceNumber;
+                    
+                                // Clear the validation message
+                                document.getElementById('validationMessage').innerText = '';
+                            } else {
+                                // Display validation message if the entered journal number is not valid or not continuous
+                                document.getElementById('validationMessage').innerText = 'Please enter a valid and continuous journal number.';
+                            }
+                        }
+                    
+                        // Function to check if the entered journal number is valid and continuous
+                        function isValidJournalNumber(journalNumber, lastJournalNumber) {
+                            return !isNaN(journalNumber) && journalNumber > lastJournalNumber;
+                        }
+                    
+                        // Function to retrieve the last entered journal number from the table
+                        function getLastJournalNumberFromTable() {
+                            // Replace 'journalTable' with the actual ID of your table
+                            var table = document.getElementById('journalTable');
+                            
+                            // Assume the last entered journal number is in the first column of the last row
+                            var lastRow = table.rows[table.rows.length - 1];
+                            var lastJournalNumber = parseInt(lastRow.cells[0].innerText);
+                    
+                            return isNaN(lastJournalNumber) ? 0 : lastJournalNumber;
+                        }
+                    
+                        // Function to retrieve the last entered reference number from the table
+                        function getLastReferenceNumberFromTable() {
+                            // Replace 'journalTable' with the actual ID of your table
+                            var table = document.getElementById('journalTable');
+                            
+                            // Assume the last entered reference number is in the second column of the last row
+                            var lastRow = table.rows[table.rows.length - 1];
+                            var lastReferenceNumber = parseInt(lastRow.cells[1].innerText);
+                    
+                            return isNaN(lastReferenceNumber) ? 0 : lastReferenceNumber;
+                        }
+                    </script>
+                    
+                    
                       <!-- <div class="row mt-5 mb-5">
                         <div class="col-md-3">
                                 <label for="">Notes:</label>
@@ -288,26 +344,26 @@ tr:hover{
                             <tr>
                                 <td class="text-light">1</td>
                                 <td>
-                                  <div id="custom_dropdowns" class="position-relative">
-                                    <div class="position-absolute bg-success rounded bg-light text-dark  border border-dark"  style="margin-top: 3rem;">
-                                      <div id="custom-dropdown">
-                                        <div style="overflow-y: auto;height: 10rem;" name="account">
-        
-                                          {% if accounts %}
-                                          {% for i in accounts %}
-                                          <p class="drop_hovers ps-3 p-2 m-0">{{ i.account_name }}</p>
-                                          <span hidden>{{ i.id }}</span>
-                                          {% endfor %}
-                                          {% else %}
-                                          <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed;pointer-events: none;">No accounts are available</h6>
-                                          {% endif %}
-                                            
+                                    <div id="custom_dropdowns" class="position-relative">
+                                        <div class="position-absolute bg-success rounded bg-light text-dark  border border-dark" style="margin-top: 3rem;">
+                                            <div id="custom-dropdown">
+                                                <div style="overflow-y: auto;height: 10rem;" name="account">
+                                                    {% if accounts %}
+                                                        {% for account in accounts %}
+                                                            {% if account.user == request.user %} {# Assuming 'user' is the field linking the account to the user #}
+                                                                <p class="drop_hovers ps-3 p-2 m-0">{{ account.account_name }}</p>
+                                                                <span hidden>{{ account.id }}</span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed;pointer-events: none;">No accounts are available</h6>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
                                         </div>
-                                      </div>
                                     </div>
-                                  </div>
-                                  <input hidden id="account_value" type="text" name="account_id" value="">
-                                  <input type="text" class="form-control bg-light text-dark" id="account_list" name="account" placeholder="search..." required>
+                                    <input hidden id="account_value" type="text" name="account_id" value="">
+                                    <input type="text" class="form-control bg-light text-dark" id="account_list" name="account" placeholder="search..." required>
                                   <script>
                                     $(document).ready(function(){
                                       var date = new Date().toISOString().split('T')[0]
@@ -357,40 +413,46 @@ tr:hover{
                                 </td>
                                 <td><input type="text" name="description" class="form-control text-dark"></td>
                                 <td>
-                                  <div id="custom_dropdown1" class="position-relative">
-                                    <div class="position-absolute bg-success rounded bg-light text-dark  border border-dark"  style="margin-top: 3rem;">
-                                      <div id="custom-dropdown">
-                                        <div style="overflow-y: auto;height: 10rem;">
-                                          {% if customers %}
-                                          {% for i in customers %}
-                                          <p class="drop_hovers ps-3 p-2 m-0">{{ i.customerName }}</p>
-                                          <span hidden>{{ i.id }}</span>
-                                          {% endfor %}
-                                          {% else %}
-                                          <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed;pointer-events: none;">No customers are available</h6>
-                                          {% endif %}
-                                          {% if vendors %}
-                                          {% for i in vendors %}
-                                          <p class="drop_hovers ps-3 p-2 m-0">{{ i.vendor_display_name }}</p>
-                                          <span hidden>{{ i.id }}</span>
-                                          {% endfor %}
-                                          {% else %}
-                                          <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed;pointer-events: none;">No vendors are available</h6>
-                                          {% endif %}
-                                          {% if employee %}
-                                          {% for i in employee %}
-                                          <p class="drop_hovers ps-3 p-2 m-0">{{ i.first_name }}{{ i.last_name }}</p>
-                                          <span hidden>{{ i.id }}</span>
-                                          {% endfor %}
-                                          {% else %}
-                                          <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed;pointer-events: none;">No employee are available</h6>
-                                          {% endif %}
+                                    <div id="custom_dropdown1" class="position-relative">
+                                        <div class="position-absolute bg-success rounded bg-light text-dark border border-dark" style="margin-top: 3rem;">
+                                            <div id="custom-dropdown">
+                                                <div style="overflow-y: auto; height: 10rem;">
+                                                    {% if customers %}
+                                                        {% for customer in customers %}
+                                                            {% if customer.user == request.user %}
+                                                                <p class="drop_hovers ps-3 p-2 m-0">{{ customer.customerName }}</p>
+                                                                <span hidden>{{ customer.id }}</span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No customers are available</h6>
+                                                    {% endif %}
+                                                    {% if vendors %}
+                                                        {% for vendor in vendors %}
+                                                            {% if vendor.user == request.user %}
+                                                                <p class="drop_hovers ps-3 p-2 m-0">{{ vendor.vendor_display_name }}</p>
+                                                                <span hidden>{{ vendor.id }}</span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No vendors are available</h6>
+                                                    {% endif %}
+                                                    {% if employees %}
+                                                        {% for employee in employees %}
+                                                            {% if employee.user == request.user %}
+                                                                <p class="drop_hovers ps-3 p-2 m-0">{{ employee.first_name }}{{ employee.last_name }}</p>
+                                                                <span hidden>{{ employee.id }}</span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No employees are available</h6>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
                                         </div>
-                                      </div>
                                     </div>
-                                  </div>
-                                  <input hidden id="customer_value" type="text" name="customer_id" value="">
-                                  <input type="text" class="form-control bg-light text-dark" id="customer_list" name="contact" placeholder="search..." required>
+                                    <input hidden id="customer_value" type="text" name="customer_id" value="">
+                                    <input type="text" class="form-control bg-light text-dark" id="customer_list" name="contact" placeholder="search..." required>
                                   <!--<input hidden id="vendor_value" type="text" name="vendor_id" value="">
                                   <input type="text" class="form-control bg-light text-dark" id="vendor_list" name="vendor_name" placeholder="search..." required>
                                   <input hidden id="employee_value" type="text" name="employee_id" value="">
@@ -592,8 +654,8 @@ tr:hover{
         </div>
         <div class="modal-body" style="background: rgb(32, 35, 37);">
           <div class="card p-3 m-3">
-            <form action="" method="post" class="needs-validation" novalidate autocomplete="off" id="modalAccount">
-  
+            <form action="{% url 'create_account'%}" method="post" class="needs-validation" novalidate autocomplete="off" id="modalAccount">
+                {% csrf_token%}
               <div class="d-flex align-items-center">
                 <h5 style="font-size: 25px;">Create Account</h5>
                 <div style="width: 3px;"></div>

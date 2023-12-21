@@ -41,7 +41,7 @@ from django.template.response import TemplateResponse
 import calendar
 from calendar import HTMLCalendar
 from django.template import loader
-
+from decimal import Decimal
 
 
 def index(request):
@@ -7586,12 +7586,19 @@ def Approved(request,id):
     
 ###################################################################### CHART OF ACCOUNT 
 
-def chartofaccount_home(request):
+'''def chartofaccount_home(request):
     view=Chart_of_Account.objects.filter(user=request.user.id)
     user = request.user
     company = company_details.objects.get(user=user)
-    return render(request,"chartofaccount_home.html", {'view':view,'company':company})
+    return render(request,"chartofaccount_home.html", {'view':view,'company':company})'''
 
+def chartofaccount_home(request):
+    company=company_details.objects.get(user=request.user)
+    cur_user = request.user
+    user = User.objects.get(id=cur_user.id)
+    views=Chart_of_Account.objects.filter(user=user)
+    view=Chart_of_Account.objects.all()
+    return render(request,"chartofaccount_home.html", {'view':view,"views":views,'company':company})
 
 login_required(login_url='login')
 def view_chart_of_accounts_all(request):
@@ -7721,6 +7728,8 @@ def create_account(request):
         a.save()
         return redirect('chartofaccount_home')
     return redirect('chartofaccount_home')
+
+
 
 def chartofaccount_view(request,id):
     view=Chart_of_Account.objects.get(id=id)
@@ -7979,7 +7988,7 @@ def edit_chart_of_account(request,pk):
             a.currency = request.POST.get("parent_account32")
         
         a.save()
-        return redirect('chartofaccount_home')
+        return redirect('chartofaccount_view', id=pk)
     return redirect('chartofaccount_home')
 
 
@@ -14733,7 +14742,7 @@ def add_journal(request):
     except company_details.DoesNotExist:
         company_name = ''
         address = ''
-
+    
     if request.method == 'POST':
         user = request.user
         date = request.POST.get('date')
@@ -14770,77 +14779,7 @@ def add_journal(request):
         )
         journal.save()
         
-        '''if Journal.objects.filter(user=request.user.id).exists():
-            jour = Journal.objects.filter(user=request.user.id)
-            jour_id = jour.last()
-            if jour.exclude(id=jour_id.id).last():
-                jour_id_second_last = jour.exclude(id=jour_id.id).last()
-                pattern = jour_id_second_last.pattern
-            else:
-                jour_id_second_last = jour.first()
-                pattern = jour_id_second_last.pattern
-            if journal_no != jour_id.jour_rec_number and journal_no != '' :
-                jour_id = Journal(user=user)
-                count_for_ref_no =Journal.objects.filter(user=user.id).count()
-                jour_id.pattern = pattern
-                jour_id.save()
-                ref_num = int(count_for_ref_no)+2
-                jour_id.ref_number = f'{ref_num:02}'
-
-                jour_id.jour_rec_number = jour_id_second_last.jour_rec_number
-                jour_id.save()
-            else:
-                jour_id = Journal(user=user)
-                count_for_ref_no = Journal.objects.filter(user=user.id).count()
-                jour_id.pattern = pattern
-                jour_id.save()
-                ref_num = int(count_for_ref_no)+2
-                jour_id.ref_number = f'{ref_num:02}'
-
-                jour_rec_num = ''.join(i for i in jour_id_second_last.jour_rec_number if i.isdigit())
-                jour_rec_num = int(jour_rec_num)+1
-
-                jour_id.jour_rec_number = f'{pattern}{jour_rec_num:02}'
-                jour_id.save()
-        else:  
-            jour_id = Journal(user=user)
-            jour_id.save()
-            jour_id.ref_number = f'{2:02}'
-            
-            pattern = ''.join(i for i in journal_no if not i.isdigit())
-            jour_id.pattern = pattern
-            jour_id.jour_rec_number = f'{pattern}{2:02}'
-            jour_id.save()'''
-
-
-
-        '''account_list = request.POST.getlist('account')
-        description_list = request.POST.getlist('description')
-        contact_list = request.POST.getlist('contact')
-        debits_list = request.POST.getlist('debits')
-        credits_list = request.POST.getlist('credits')
-
-        total_debit = 0
-        total_credit = 0
-
-        for i in range(len(account_list)):
-            account = account_list[i]
-            description = description_list[i]
-            contact = contact_list[i]
-            debits = debits_list[i]
-            credits = credits_list[i]
-            #print(debits)
-            #print(credits)
-
-            journal_entry = JournalEntry(
-                journal=journal,
-                account=account,
-                description=description,
-                contact=contact,
-                debits=debits,
-                credits=credits
-            )
-            journal_entry.save()'''
+       
 
         total_debit += float(debits) if debits else 0
         total_credit += float(credits) if credits else 0
@@ -15135,11 +15074,10 @@ def delete_journal(request, journal_id):
         return JsonResponse({'message': 'Journal not found.'})
     
 def edit_journal(request, journal_id):
-    #journal = get_object_or_404(Journal, id=journal_id)
     accounts = Chart_of_Account.objects.all()
     vendors = vendor_table.objects.all()
     customers = customer.objects.all()
-    employee=Payroll.objects.all()
+    employee = Payroll.objects.all()
 
     try:
         company = company_details.objects.get(user=request.user)
@@ -15149,87 +15087,61 @@ def edit_journal(request, journal_id):
         company_name = ''
         address = ''
 
-    if request.method == 'POST':
-        user = request.user
-        date = request.POST.get('date')
-        journal_no = request.POST.get('journal_no')
-        reference_no = request.POST.get('reference_no')
-        notes = request.POST.get('notes')
-        currency = request.POST.get('currency')
-        cash_journal = request.POST.get('cash_journal') == 'True'
-        account = request.POST.get('account')
-        description = request.POST.get('description')
-        contact = request.POST.get('contact')
-        debits= request.POST.get('debits')
-        credits= request.POST.get('credits')
-        
-        total_debit = 0
-        total_credit = 0
-        journal = Journal(
-            user=user,
-            date = date,
-            journal_no = journal_no,
-            reference_no = reference_no,
-            notes = notes,
-            currency = currency,
-            cash_journal = cash_journal, 
-            account=account,
-            description=description,
-            contact=contact,
-            debits=debits,
-            credits=credits,      
-       
-            old=attachment,
-            new = request.FILES.get('attachment')
-            if old !=None and new==None:
-                attachment=old
-            else:
-                attachment=new 
-        )           
-        journal.save()
+    try:
+        # Fetch the journal entry to edit
+        journal = Journal.objects.get(id=journal_id)
 
-       ''' account_list = request.POST.getlist('account')
-        description_list = request.POST.getlist('description')
-        contact_list = request.POST.getlist('contact')
-        debits_list = request.POST.getlist('debits')
-        credits_list = request.POST.getlist('credits')
+        if request.method == 'POST':
+            # Retrieve updated data from POST request
+            date = request.POST.get('date')
+            journal_no = request.POST.get('journal_no')
+            reference_no = request.POST.get('reference_no')
+            notes = request.POST.get('notes')
+            currency = request.POST.get('currency')
+            cash_journal = request.POST.get('cash_journal') == 'True'
+            new_attachment = request.FILES.get('new_attachment') 
+            account = request.POST.get('account')
+            description = request.POST.get('description')
+            contact = request.POST.get('contact')
+            debits = request.POST.get('debits')
+            credits = request.POST.get('credits')
 
-        total_debit = 0
-        total_credit = 0
+            # Update the journal entry fields
+            journal.date = date
+            journal.journal_no = journal_no
+            journal.reference_no = reference_no
+            journal.notes = notes
+            journal.currency = currency
+            journal.cash_journal = cash_journal
+            journal.account = account
+            journal.description = description
+            journal.contact = contact
+            journal.debits = debits
+            journal.credits = credits
 
-        JournalEntry.objects.filter(journal=journal).delete()
+            # Check if a new file is uploaded
+            if new_attachment:
+                journal.attachment = new_attachment
 
-        for i in range(len(account_list)):
-            account = account_list[i]
-            description = description_list[i]
-            contact = contact_list[i]
-            debits = debits_list[i]
-            credits = credits_list[i]
+            # Calculate totals
+            total_debit = float(debits) if debits else 0
+            total_credit = float(credits) if credits else 0
+            difference = total_debit - total_credit
 
-            journal_entry = JournalEntry(
-                journal=journal,
-                account=account,
-                description=description,
-                contact=contact,
-                debits=debits,
-                credits=credits
-            )
-            journal_entry.save()'''
+            # Update the journal with totals
+            journal.total_debit = total_debit
+            journal.total_credit = total_credit
+            journal.difference = difference
 
-            total_debit += float(debits) if debits else 0
-            total_credit += float(credits) if credits else 0
+            journal.save()
 
-        difference = total_debit - total_credit
+            return redirect("journal_list",id=journal_id)
 
-        journal.total_debit = total_debit
-        journal.total_credit = total_credit
-        journal.difference = difference
-        journal.save()
+        return render(request, 'edit_journal.html', {'journal': journal, 'accounts': accounts, 'vendors': vendors, 'customers': customers, 'company_name': company_name, 'address': address, 'company': company, 'employee': employee})
 
-        return redirect('manual_journal_home')
-
-    return render(request, 'edit_journal.html', {'journal': journal, 'accounts': accounts, 'vendors': vendors, 'customers': customers, 'company_name': company_name,'address': address,'company' : company,'employee':employee})
-
+    except Journal.DoesNotExist:
+        # Handle the case where the journal entry with the given ID does not exist
+        return HttpResponse("Journal entry not found", status=404)
 def save_pdf(request):
     if request.method == 'POST':
         pdf_data = request.POST.get('pdf_data')

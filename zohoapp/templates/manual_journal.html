@@ -99,55 +99,29 @@
       var table, rows, switching, i, x, y, shouldSwitch;
       table = document.getElementById("myTable");
       switching = true;
+      
       while (switching) {
         switching = false;
         rows = table.rows;
+        
         for (i = 1; i < rows.length - 1; i++) {
           shouldSwitch = false;
-          x = rows[i].getElementsByTagName("td")[attribute === 'contactName' ? 2 : 4];
-          y = rows[i + 1].getElementsByTagName("td")[attribute === 'contactName' ? 2 : 4];
-          if (attribute === 'contactName' ? (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) : (parseInt(x.innerHTML) > parseInt(y.innerHTML))) {
-            shouldSwitch = true;
-            break;
+          x = rows[i].getElementsByTagName("td")[attribute === 'contactName' ? 2 : 1];
+          y = rows[i + 1].getElementsByTagName("td")[attribute === 'contactName' ? 2 : 1];
+    
+          if (attribute === 'contactName') {
+            shouldSwitch = x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase();
+          } else if (attribute === 'journalNumber') {
+            shouldSwitch = parseInt(x.innerHTML) > parseInt(y.innerHTML);
           }
-        }
-        if (shouldSwitch) {
-          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-          switching = true;
+    
+          if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+          }
         }
       }
     }
-  
-    function showAll() {
-      // Code to show all data
-      console.log("Show all data");
-    }
-  
-    // Event listener for dropdown items
-    document.addEventListener('DOMContentLoaded', function () {
-      var dropdownItems = document.querySelectorAll('.dropdown-item');
-  
-      dropdownItems.forEach(function (item) {
-        item.addEventListener('click', function () {
-          var text = item.innerText.trim();
-  
-          // Perform different actions based on the selected dropdown item
-          switch (text) {
-            case 'All':
-              showAll();
-              break;
-            case 'Contact Name':
-              sortTable('contactName');
-              break;
-            case 'Journal Number':
-              sortTable('journalNumber');
-              break;
-            default:
-              console.log("Unknown option");
-          }
-        });
-      });
-    });
   </script>
   <div class="col-md-4"></div>
   <div class="col-md-3">
