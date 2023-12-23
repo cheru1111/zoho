@@ -7587,18 +7587,34 @@ def Approved(request,id):
 ###################################################################### CHART OF ACCOUNT 
 
 '''def chartofaccount_home(request):
-    view=Chart_of_Account.objects.filter(user=request.user.id)
+    view=Chart_of_Account.objects.filter(user=request.user.id).exclude(create_status__isnull=True)
     user = request.user
     company = company_details.objects.get(user=user)
     return render(request,"chartofaccount_home.html", {'view':view,'company':company})'''
 
-def chartofaccount_home(request):
+'''def chartofaccount_home(request):
     company=company_details.objects.get(user=request.user)
     cur_user = request.user
     user = User.objects.get(id=cur_user.id)
     views=Chart_of_Account.objects.filter(user=user)
     view=Chart_of_Account.objects.all()
-    return render(request,"chartofaccount_home.html", {'view':view,"views":views,'company':company})
+    return render(request,"chartofaccount_home.html", {'view':view,"views":views,'company':company})'''
+
+def chartofaccount_home(request):
+    user = request.user
+
+    # Get all entries with create_status set to default_value for every user
+    default_entries = Chart_of_Account.objects.filter(create_status='default')
+
+    # Get entries created by the current user with create_status set to null
+    user_entries = Chart_of_Account.objects.filter(user=user, create_status__isnull=True)
+
+    # Combine the two querysets
+    view = default_entries | user_entries
+
+    company = company_details.objects.get(user=user)
+
+    return render(request, "chartofaccount_home.html", {'view': view, 'company': company})
 
 login_required(login_url='login')
 def view_chart_of_accounts_all(request):
@@ -7730,14 +7746,28 @@ def create_account(request):
     return redirect('chartofaccount_home')
 
 
+# views.py
 
-def chartofaccount_view(request,id):
+def chartofaccount_view(request, id):
+    view = Chart_of_Account.objects.get(id=id)
+    default_entries = Chart_of_Account.objects.filter(create_status='default')
+    print("Default Entries:", default_entries)  # Add this line for debugging
+    viewitem = Chart_of_Account_Upload.objects.filter(id=id)
+    views = Chart_of_Account.objects.filter(user=request.user.id)
+    company = company_details.objects.get(user_id=request.user.id)
+    context = {'view': view, 'viewitem': viewitem, 'views': views, 'company': company}
+    context['default'] = default_entries
+    return render(request, 'chartofaccount_view.html', context)
+
+
+
+'''def chartofaccount_view(request,id):
     view=Chart_of_Account.objects.get(id=id)
     viewitem=Chart_of_Account_Upload.objects.filter(id=id)
     views=Chart_of_Account.objects.filter(user=request.user.id)
     company=company_details.objects.get(user_id=request.user.id)
     context={'view':view,'viewitem':viewitem,'views':views,'company':company}
-    return render(request,'chartofaccount_view.html',context)
+    return render(request,'chartofaccount_view.html',context)'''
 
 '''def chartofaccount_view(request,pk):
     company=company_details.objects.get(user=request.user)
@@ -7849,8 +7879,8 @@ def create_account_view(request):
             a.currency = request.POST.get("currency",None)
 
         a.save()
-        return redirect('chartofaccount_home')
-    return redirect('chartofaccount_home')
+        return redirect('add_journal')
+    return redirect('add_journal')
 
 
 
