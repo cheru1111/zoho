@@ -2,6 +2,8 @@
 {% load static %}
 {% block content %}
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -28,6 +30,12 @@ crossorigin="anonymous"></script>
 <!-- Include Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+WyW8eNmD+Il/cHA4G2jzZ8NOGfKgjBkys"
 crossorigin="anonymous"></script>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <style>
   .modal {
@@ -846,20 +854,75 @@ crossorigin="anonymous"></script>
         <a href="{% url 'create_edit_chart_of_account' view.id %}" class="btn btn-outline-warning text-right px-2 py-2" title="Edit">
           <i class="mdi mdi-pencil"></i>
         </a>
-        <a href="" class="btn btn-outline-warning text-right px-2 py-2" data-toggle="modal" data-target="#upload_account"
-            title="Upload" id="pdf">
-            <i class="mdi mdi-file-pdf-box"></i></a>
+        <a href="#" class="btn btn-outline-warning text-right px-2 py-2" data-toggle="modal" data-target="#upload_account" title="Upload" id="pdf">
+          <i class="mdi mdi-file-pdf-box"></i>
+      </a>
       
-        
+      
+      
     
-        <!-- {% if estimate.attachment != ""%} -->
-        <a href="#" class="btn btn-outline-warning text-right px-2 py-2" data-toggle="modal"
-          data-target="#download_account" title="Download Attached File">
-          <span class="mdi mdi-download"></span>
-        </a>
-        <!-- {%endif%} -->
-
+        
+      <a href="#" class="btn btn-outline-warning text-right px-2 py-2" data-toggle="modal" data-target="#download_account" title="Download Attached File">
+        <span class="mdi mdi-download"></span>
+    </a>
+    
      
+      
+
+        <div class="modal" id="download_account">
+          <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
+            <div class="modal-content modal-xl p-3" style="background-color: #000000;">
+              <div class="modal-header">
+                <h5 class="modal-title text-info">Download Attached Document</h5>
+                <button type="button" class="close text-light" data-dismiss="modal" aria-label=""
+                  style="font-size: 20px;background-color: #000000;border:none;">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-11 col-lg-11">
+                  <table class="table  text-white" id="myTable">
+                    <thead>
+                      <tr>
+        
+                        <th>TITLE </th>
+                        <th>DESCRIPTION</th>
+                        <th>DOCUMENT</th>
+                        <th>
+                          ACTION
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for v in doc %}
+        
+                      <tr id="over">
+        
+                        <!-- <td onclick="location.href ='{% url 'detail' v.id %}' " > {{v.Name}}</td> -->
+                        <td>{{ v.title }}</td>
+                        <td>{{v.description}}</td>
+                        <td>{{ v.document }}</td>
+                        <td>
+                          <a href="{% url 'download_chart_of_account' v.id %}" class="btn btn-warning">Download</a>
+                        </td>
+        
+        
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                <div class="col-sm-12 col-md-1 col-lg-1"></div>
+        
+              </div>
+        
+        
+        
+            </div>
+          </div>
+        </div>
+          
+      
 
         <button onclick="printForm()" class="btn btn-outline-warning text-right px-2 py-2" data-toggle="tooltip" title="Print">
           <i class="mdi mdi-printer"></i>
@@ -988,124 +1051,6 @@ crossorigin="anonymous"></script>
   </div>
 
  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  <!--<div class="col-sm-8">
-
-    <div class="row  mx-1 py-3 p-3 mb-2 bg-warning">
-      <div class="col-sm-5 text-dark" style="font-size: 2.5rem;">
-        <div class="col-sm-6 ">
-          
-
-          <h4 class="text-dark" style="text-transform: uppercase;">{{ind.account_name}}
-            {% if ind.status == "active" %}
-            <input type="radio" title="active" style="accent-color: rgb(4, 209, 4);" checked readonly>
-            {% else %}
-            <input type="radio" title="inactive" style="accent-color: red;" checked readonly>
-            {% endif %}
-          </h4>
-          <h6 class="text-dark">{{ind.account_type}}</h6>
-
-        </div>
-      </div>
-      <div class="col-sm-7 p-4 text-white text-right my-auto">
-        <div class="btn-group" role="group" aria-label="Basic example">
-          <a href="{% url 'create_edit_chart_of_account' view.id %}" class="btn btn-outline-dark text-right px-3 py-2"
-            title="Edit">
-            <i class="mdi mdi-pencil"></i></a>
-          <a href="" class="btn btn-outline-dark text-right px-3 py-2" data-toggle="modal" data-target="#upload_account"
-            title="Upload" id="pdf">
-            <i class="mdi mdi-file-pdf-box"></i></a>-->
-          <!-- {% if estimate.attachment != ""%} -->
-          <!--<a href="" class="btn btn-outline-dark text-right px-3 py-2" data-toggle="modal"
-            data-target="#download_account" title="Download Attached File">
-            <span class="mdi mdi-download"></span></a>-->
-          <!-- {%endif%} -->
-          <!--<a href="" onclick="printForm()" class="btn btn-outline-dark text-right px-3 py-2" data-toggle="tooltip"
-            title="Print">
-            <i class="mdi mdi-printer"></i></a>
-          <a href="mailto:example@example.com" class="btn btn-outline-dark text-right px-3 py-2"  title="Email">
-            <i class="mdi mdi-email"></i></a>
-
-          <a href="" class="btn btn-outline-dark text-right px-3 py-2"
-            onclick="return confirm('Do you want to Delete this Estimate?');"><i class="mdi mdi-delete"></i></a>
-        </div>
-      </div>
-    </div>
-
-
-    <div class="slip pt-3 p-5 mx-1 convert_to_pdf bg-light" id="selected-area"
-      style="box-shadow: 5px 5px 10px rgb(45, 45, 45);">
-
-
-
-      <hr>
-
-
-      <h4 class="text-dark text-center" style="text-transform: uppercase;">{{ind.account_name}}
-        {% if ind.status == "active" %}
-        <input type="radio" title="active" style="accent-color: rgb(4, 209, 4);" checked readonly>
-        {% else %}
-        <input type="radio" title="inactive" style="accent-color: red;" checked readonly>
-        {% endif %}
-      </h4>
-      <h6 class="text-dark text-center">{{ind.account_type}}</h6><br><br>
-
-
-      <div class="row">
-        <div class="col-sm-6 mt-auto">
-          <h6 class="text-dark">CLOSING BALANCE</h6>
-          <h3 class="text-dark">₹0.00</h3>
-        </div>
-        <div class="col-sm-6  mt-auto" style="text-align: right;">
-          <h6 class="text-dark "></h6>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-sm-12 mt-auto">
-          <hr style="color: black;">
-        </div>
-
-      </div>
-
-      <div class="row">
-        <div class="col-sm-12 mt-auto">
-          <h6 class="text-dark">{{ind.description}}</h6>
-
-        </div>
-      </div>
-    </div>
-  </div>
-</div>-->
-
-
-
-
-
-
-
-
-
-
-
-
-
 <!-- .................................  DOC DOWNLOAD  ................................................... -->
 
 <div class="modal" id="download_account">
@@ -1162,91 +1107,124 @@ crossorigin="anonymous"></script>
 </div>
 <!-- .........................................   DOC  UPLOAD   .............................................. -->
 
-<form action="{% url 'upload_chart_of_account' view.id %}" method="POST" enctype="multipart/form-data">
-  {% csrf_token%}
-  <div class="modal" id="upload_account">
-    <div class="modal-dialog modal-dialog-centered " role="document" style="max-width: 600px;">
-      <div class="modal-content p-3" style="background-color: #000000;">
-        <div class="modal-header">
-          <h5 class="modal-title text-info">Document Upload</h5>
-          <button type="button" class="close text-light" data-dismiss="modal" aria-label=""
-            style="font-size: 20px;background-color: #000000;border:none;">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-
-        <div class="row mt-4">
-          <div class="col-sm-8">
-
-            <div id="name" style="display: block;">
-              <div class="row mt-3">
-                <div class="col-sm-4">
-                  <label for="">Title:</label>
-                </div>
-                <div class="col-sm-8">
-                  <input type="text" class="form-control text-dark bg-light" name="file_title" id="file_title" required>
-                </div>
-              </div>
-
-            </div>
-
-            <!-- <div id="name" style="display: block;">
-              <div class="row mt-3">
-                <div class="col-sm-12">
-                  <label for="">Description:</label>
-                </div>
-              </div>
-              <div class="row mt-2">
-                <div class="col-sm-12">
-                  <textarea name="description" class="form-control text-dark bg-light" id="description" placeholder="Max. 500 characters"></textarea>
-                </div>
-              </div>
-            </div>  -->
-
-
-            <div class="row mt-3">
-              <div class="col-sm-4">
-                <label for="">Description:</label>
-              </div>
-              <div class="col-sm-8">
-                <textarea name="description" rows="3" cols="30" class="text-dark bg-light" id="description"
-                  placeholder="Max. 500 characters"></textarea>
-              </div>
-            </div>
-            <div class="row mt-3">
-              <div class="col-sm-4">
-                <label for="">File Upload:</label>
-              </div>
-              <div class="col-sm-8">
-                <input type="file" name="file" required>
-              </div>
-            </div>
-
-
+<!-- .......................................upload pdf............................................................ -->
+<!-- Modal -->
+<div class="modal fade" id="upload_account" tabindex="-1" role="dialog" aria-labelledby="uploadAccountModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content bg-dark">
+          <div class="modal-header">
+              <h5 class="modal-title" id="uploadAccountModalLabel">Upload PDF</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
           </div>
-
-        </div>
-        <div class="row mt-3">
-          <div class="col-sm-12">
-            <input class="btn btn-success" type="submit" value="Save">
-
-            <input class="btn btn-light ml-3" type="reset" value="Cancel">
+          <div class="modal-body">
+              <!-- Form for file upload -->
+              <form action="{% url 'upload_chart_of_account' view.id %}" method="POST" enctype="multipart/form-data"id="uploadForm">
+                {% csrf_token%}
+                <div class="row mt-4">
+                  <div class="col-sm-8">
+        
+                    <div id="name" style="display: block;">
+                      <div class="row mt-3">
+                        <div class="col-sm-4">
+                          <label for="" class="text-light">Title:</label>
+                        </div>
+                        <div class="col-sm-8">
+                          <input type="text" class="form-control text-dark bg-light" name="file_title" id="file_title" required>
+                        </div>
+                      </div>
+        
+                    </div>
+        
+                    <!-- <div id="name" style="display: block;">
+                      <div class="row mt-3">
+                        <div class="col-sm-12">
+                          <label for="">Description:</label>
+                        </div>
+                      </div>
+                      <div class="row mt-2">
+                        <div class="col-sm-12">
+                          <textarea name="description" class="form-control text-dark bg-light" id="description" placeholder="Max. 500 characters"></textarea>
+                        </div>
+                      </div>
+                    </div>  -->
+        
+        
+                    <div class="row mt-3">
+                      <div class="col-sm-4">
+                        <label for="">Description:</label>
+                      </div>
+                      <div class="col-sm-8">
+                        <textarea name="description" rows="3" cols="30" class="text-dark bg-light" id="description"
+                          placeholder="Max. 500 characters"></textarea>
+                      </div>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-sm-4">
+                        <label for="">File Upload:</label>
+                      </div>
+                      <div class="col-sm-8">
+                  <input type="file" id="pdfFileInput" name="file" required accept=".pdf">
+                </div>
+              </div>
+  
+  
+            </div>
+  
           </div>
+          <div class="row mt-3">
+            <div class="col-sm-12">
+              <input class="btn btn-success" type="submit" value="Save"onclick="uploadPDF()">
+  
+              <input class="btn btn-light ml-3" type="reset" value="Cancel"data-dismiss="modal">
+            </div>
+          </div>
+  
+  
         </div>
-
-
       </div>
     </div>
+              </form>
+          
+      </div>
   </div>
-</form>
+</div>
 
+<script>
+  // JavaScript function to handle file upload
+  function uploadPDF() {
+      var fileInput = document.getElementById('pdfFileInput');
+      var file = fileInput.files[0];
 
+      // Check if a file is selected
+      if (file) {
+          var formData = new FormData();
+          formData.append('file', file);
 
-
-
-
-
-<!-- ................................................................................................... -->
+          // Perform the file upload logic here (e.g., using AJAX)
+          // Replace the URL below with your server-side script that handles file uploads
+          var uploadUrl = '/your-server-upload-endpoint';
+          
+          // Example using Fetch API for simplicity, you may use other methods like jQuery.ajax
+          fetch(uploadUrl, {
+              method: 'POST',
+              body: formData
+          })
+          .then(response => {
+              // Handle the response as needed
+              console.log('File uploaded successfully');
+              // Close the modal after successful upload
+              $('#upload_account').modal('hide');
+          })
+          .catch(error => {
+              console.error('Error uploading file:', error);
+          });
+      } else {
+          console.warn('No file selected');
+      }
+  }
+</script>
 
 
 <!-- .........................................search function.................................................... -->

@@ -7746,18 +7746,22 @@ def create_account(request):
     return redirect('chartofaccount_home')
 
 
-# views.py
-
 def chartofaccount_view(request, id):
     view = Chart_of_Account.objects.get(id=id)
+    
+    # Filter default entries based on create_status only
     default_entries = Chart_of_Account.objects.filter(create_status='default')
     print("Default Entries:", default_entries)  # Add this line for debugging
+    
     viewitem = Chart_of_Account_Upload.objects.filter(id=id)
     views = Chart_of_Account.objects.filter(user=request.user.id)
     company = company_details.objects.get(user_id=request.user.id)
+    
     context = {'view': view, 'viewitem': viewitem, 'views': views, 'company': company}
     context['default'] = default_entries
     return render(request, 'chartofaccount_view.html', context)
+
+
 
 
 
