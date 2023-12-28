@@ -854,17 +854,57 @@ crossorigin="anonymous"></script>
         <a href="{% url 'create_edit_chart_of_account' view.id %}" class="btn btn-outline-warning text-right px-2 py-2" title="Edit">
           <i class="mdi mdi-pencil"></i>
         </a>
-        <a href="#" class="btn btn-outline-warning text-right px-2 py-2" data-toggle="modal" data-target="#upload_account" title="Upload" id="pdf">
+        <!--<a href="#" class="btn btn-outline-warning text-right px-2 py-2" data-toggle="modal" data-target="#upload_account" title="Upload" id="pdf">
           <i class="mdi mdi-file-pdf-box"></i>
-      </a>
+      </a>-->
       
       
       
     
         
-      <a href="#" class="btn btn-outline-warning text-right px-2 py-2" data-toggle="modal" data-target="#download_account" title="Download Attached File">
+      <a href="#" class="btn btn-outline-warning text-right px-2 py-2" title="Upload" onclick="triggerFileInput()">
+        <i class="mdi mdi-file-upload"></i>
+    </a>
+    
+    <a href="#" class="btn btn-outline-warning text-right px-2 py-2" title="Download Uploaded File" onclick="downloadUploadedFile()">
         <span class="mdi mdi-download"></span>
     </a>
+    
+    <script>
+        var uploadedFile = null;
+    
+        function triggerFileInput() {
+            document.getElementById('fileInput').click();
+        }
+    
+        function handleFileUpload(files) {
+            if (files.length > 0) {
+                // Assume the first file is the one to be uploaded
+                uploadedFile = files[0];
+                alert('File has been selected for upload.');
+            }
+        }
+    
+        function downloadUploadedFile() {
+            if (uploadedFile) {
+                // Assuming the file is an object URL created from a Blob
+                var blob = new Blob([uploadedFile], { type: uploadedFile.type });
+                var url = window.URL.createObjectURL(blob);
+    
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = uploadedFile.name; // Set the desired file name
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+    
+                window.URL.revokeObjectURL(url);
+            } else {
+                alert('No file has been uploaded yet.');
+            }
+        }
+    </script>
+    
     
      
       
@@ -894,7 +934,7 @@ crossorigin="anonymous"></script>
                       </tr>
                     </thead>
                     <tbody>
-                      {% for v in doc %}
+                      {% for v in viewitem %}
         
                       <tr id="over">
         
@@ -1131,7 +1171,7 @@ crossorigin="anonymous"></script>
                           <label for="" class="text-light">Title:</label>
                         </div>
                         <div class="col-sm-8">
-                          <input type="text" class="form-control text-dark bg-light" name="file_title" id="file_title" required>
+                          <input type="file" id="fileInput" style="display: none;" onchange="handleFileUpload(this.files)">
                         </div>
                       </div>
         

@@ -7600,7 +7600,7 @@ def Approved(request,id):
     view=Chart_of_Account.objects.all()
     return render(request,"chartofaccount_home.html", {'view':view,"views":views,'company':company})'''
 
-def chartofaccount_home(request):
+'''def chartofaccount_home(request):
     user = request.user
 
     # Get all entries with create_status set to default_value for every user
@@ -7614,7 +7614,38 @@ def chartofaccount_home(request):
 
     company = company_details.objects.get(user=user)
 
+    return render(request, "chartofaccount_home.html", {'view': view, 'company': company})'''
+
+def get_chart_of_account_data(user):
+    # Get all entries with create_status set to default_value for every user
+    default_entries = Chart_of_Account.objects.filter(create_status='default')
+
+    # Get entries created by the current user with create_status set to null
+    user_entries = Chart_of_Account.objects.filter(user=user, create_status__isnull=True)
+
+    # Combine the two querysets
+    view_data = default_entries | user_entries
+
+    return view_data
+
+def chartofaccount_home(request):
+    user = request.user
+    view = get_chart_of_account_data(user)
+    company = company_details.objects.get(user=user)
+
     return render(request, "chartofaccount_home.html", {'view': view, 'company': company})
+
+def chartofaccount_view(request, id):
+    view = get_object_or_404(Chart_of_Account, id=id)
+    viewitem = Chart_of_Account_Upload.objects.filter(id=id)
+    
+    # Use the helper function to get chart of account data
+    views = get_chart_of_account_data(request.user)
+
+    company = company_details.objects.get(user_id=request.user.id)
+    context = {'view': view, 'viewitem': viewitem, 'views': views, 'company': company}
+
+    return render(request, 'chartofaccount_view.html', context)
 
 login_required(login_url='login')
 def view_chart_of_accounts_all(request):
@@ -7746,7 +7777,7 @@ def create_account(request):
     return redirect('chartofaccount_home')
 
 
-def chartofaccount_view(request, id):
+'''def chartofaccount_view(request, id):
     view = Chart_of_Account.objects.get(id=id)
     
     # Filter default entries based on create_status only
@@ -7759,7 +7790,7 @@ def chartofaccount_view(request, id):
     
     context = {'view': view, 'viewitem': viewitem, 'views': views, 'company': company}
     context['default'] = default_entries
-    return render(request, 'chartofaccount_view.html', context)
+    return render(request, 'chartofaccount_view.html', context)'''
 
 
 
@@ -8039,8 +8070,8 @@ def upload_chart_of_account(request,pk):
         document=request.FILES.get('file')
         doc_upload=Chart_of_Account_Upload(user=user,account=account,account_type=account_type,account_name=account_name,title=title,description=description,document=document)
         doc_upload.save()
-        return redirect('chartofaccount_home')
-    return redirect('chartofaccount_home')
+        return redirect('chartofaccount_view',id=pk)
+    return redirect('chartofaccount_view',id=pk)
 
 def download_chart_of_account(request,pk):
     document=get_object_or_404(Chart_of_Account_Upload,id=pk)
@@ -14762,6 +14793,69 @@ def delet_manual(request,id):
     d=Journal.objects.get(id=id)
     d.delete()
     return redirect('manual_journal_home')
+'''
+@login_required(login_url='login')
+def create_sales_order(request):
+    user = request.user
+    unit=Unit.objects.all()
+    sales=Sales.objects.all()
+    company = company_details.objects.get(user=user)
+    cust=customer.objects.filter(user=user)
+    pay=payment_terms.objects.filter(user=user)
+    itm=AddItem.objects.filter(user=user)
+    purchase=Purchase.objects.all()
+    last_record = SalesOrder.objects.filter(user=request.user.id).last()
+    bank = Bankcreation.objects.filter(user=user)
+    last_reference = salesOrderReference.objects.filter(user=request.user.id).last()
+
+    if last_record ==None:
+        reference = '01'
+        remaining_characters=''
+    else:
+        lastSalesNo = last_record.sales_no
+        last_two_numbers = int(lastSalesNo[-2:])+1
+        remaining_characters = lastSalesNo[:-2] 
+        if remaining_characters == '':
+            if last_two_numbers < 10:
+                reference = '0'+str(last_two_numbers)
+            else:
+                reference = str(last_two_numbers)
+        else: 
+            if last_two_numbers < 10:
+                reference = remaining_characters+'0'+str(last_two_numbers)
+            else:
+                reference = remaining_characters+str(last_two_numbers)
+            
+    if last_reference==None:
+        reford = '01'
+    else:
+        if last_reference.reference+1 < 10:
+            reford = '0'+ str(last_reference.reference+1)
+        else:
+            reford = str(last_reference.reference+1)
+    context={
+        "c":cust,
+        "pay":pay,
+        "itm":itm,
+        "company":company,
+        "unit":unit, 
+        "sales":sales,
+        "purchase":purchase,
+        "reford":reford,
+        "reference":reference,
+        "remaining_characters":remaining_characters,
+        "bank":bank
+    }
+    return render(request,'create_sales_order.html',context)'''
+
+
+
+
+
+
+
+
+
 
 def add_journal(request):
     accounts = Chart_of_Account.objects.all()

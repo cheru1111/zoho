@@ -219,14 +219,12 @@ tr:hover{
 
 
 
-
-                      <div class="row mt-3 mb-5">
+                      <div class="row mt-2">
                         <div class="col-md-3">
-                            <label for="prof_name">Journal No:</label>
+                            <label for="journal_no">Journal No:</label>
                         </div>
                         <div class="col-md-6">
-                            <input type="text" name="journal_no" class="form-control text-dark" required id="journalNoInput" oninput="generateReferenceNumber()">
-                            <div id="validationMessage" class="text-warning"></div> <!-- Validation message element -->
+                            <input type="text" name="journal_no" id="journal_no" class="form-control text-dark">
                         </div>
                     </div>
                     
@@ -235,74 +233,42 @@ tr:hover{
                             <label for="reference_no">Reference No:</label>
                         </div>
                         <div class="col-md-6">
-                            <input type="text" name="reference_no" class="form-control text-dark" id="referenceNumber" readonly>
+                            <input type="text" name="reference_no" id="reference_no" class="form-control text-dark" readonly>
                         </div>
                     </div>
                     
                     <script>
-                        function generateReferenceNumber() {
-                            // Get the journal number input value
-                            var journalNumber = document.getElementById('journalNoInput').value;
+                        function updateReferenceNumber() {
+                            const journalNoInput = document.getElementById('journal_no');
+                            const referenceNoInput = document.getElementById('reference_no');
                     
-                            // Retrieve the last entered journal number and reference number from the table
-                            var lastJournalNumber = getLastJournalNumberFromTable();
-                            var lastReferenceNumber = getLastReferenceNumberFromTable();
+                            const journalNo = journalNoInput.value;
                     
-                            // Check if the entered journal number is valid and continuous
-                            if (isValidJournalNumber(journalNumber, lastJournalNumber)) {
-                                // Increment the reference number
-                                var referenceNumber = lastReferenceNumber + 1;
+                            // Retrieve the highest reference number used from localStorage
+                            let lastReference = parseInt(localStorage.getItem('lastReference')) || 0;
                     
-                                // Set the generated reference number to the readonly input field
-                                document.getElementById('referenceNumber').value = referenceNumber;
+                            console.log(`Journal No: ${journalNo}, Last Reference: ${lastReference}`);
                     
-                                // Clear the validation message
-                                document.getElementById('validationMessage').innerText = '';
+                            if (journalNo !== '') {
+                                // Increment the highest reference number
+                                const referenceNumber = lastReference + 1;
+                    
+                                console.log(`New Reference: ${referenceNumber}`);
+                    
+                                referenceNoInput.value = referenceNumber;
+                                localStorage.setItem('lastReference', referenceNumber);
                             } else {
-                                // Display validation message if the entered journal number is not valid or not continuous
-                                document.getElementById('validationMessage').innerText = 'Please enter a valid and continuous journal number.';
+                                referenceNoInput.value = '';
                             }
                         }
                     
-                        // Function to check if the entered journal number is valid and continuous
-                        function isValidJournalNumber(journalNumber, lastJournalNumber) {
-                            return !isNaN(journalNumber) && journalNumber > lastJournalNumber;
-                        }
+                        document.getElementById('journal_no').addEventListener('input', updateReferenceNumber);
                     
-                        // Function to retrieve the last entered journal number from the table
-                        function getLastJournalNumberFromTable() {
-                            // Replace 'journalTable' with the actual ID of your table
-                            var table = document.getElementById('journalTable');
-                            
-                            // Assume the last entered journal number is in the first column of the last row
-                            var lastRow = table.rows[table.rows.length - 1];
-                            var lastJournalNumber = parseInt(lastRow.cells[0].innerText);
-                    
-                            return isNaN(lastJournalNumber) ? 0 : lastJournalNumber;
-                        }
-                    
-                        // Function to retrieve the last entered reference number from the table
-                        function getLastReferenceNumberFromTable() {
-                            // Replace 'journalTable' with the actual ID of your table
-                            var table = document.getElementById('journalTable');
-                            
-                            // Assume the last entered reference number is in the second column of the last row
-                            var lastRow = table.rows[table.rows.length - 1];
-                            var lastReferenceNumber = parseInt(lastRow.cells[1].innerText);
-                    
-                            return isNaN(lastReferenceNumber) ? 0 : lastReferenceNumber;
-                        }
+                        // Initialize the reference number on page load
+                        updateReferenceNumber();
                     </script>
                     
-                    
-                      <!-- <div class="row mt-5 mb-5">
-                        <div class="col-md-3">
-                                <label for="">Notes:</label>
-                          </div>    
-                          <div class="col-md-6">
-                                <textarea name="notes" class="form-control text-dark" style="height: 60px;"></textarea>
-                            </div>
-                        </div> -->
+
                         <div class="row mt-3 mb-5">
                           <div class="col-md-3">
                                 <label for="">Currency:</label>
@@ -349,15 +315,16 @@ tr:hover{
                                             <div id="custom-dropdown">
                                                 <div style="overflow-y: auto;height: 10rem;" name="account">
                                                     {% if accounts %}
-                                                        {% for account in accounts %}
-                                                            {% if account.user == request.user %} {# Assuming 'user' is the field linking the account to the user #}
-                                                                <p class="drop_hovers ps-3 p-2 m-0">{{ account.account_name }}</p>
-                                                                <span hidden>{{ account.id }}</span>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    {% else %}
-                                                        <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed;pointer-events: none;">No accounts are available</h6>
-                                                    {% endif %}
+                                                    {% for account in accounts %}
+                                                        {% if account.user == request.user or account.create_status == 'default' %}
+                                                            <p class="drop_hovers ps-3 p-2 m-0">{{ account.account_name }}</p>
+                                                            <span hidden>{{ account.id }}</span>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed;pointer-events: none;">No accounts are available</h6>
+                                                {% endif %}
+                                                
                                                 </div>
                                             </div>
                                         </div>
