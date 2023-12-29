@@ -1417,7 +1417,7 @@ class Journal(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     date = models.DateField(null=True)
     journal_no = models.CharField(max_length=255, unique=True,null=True)  
-    reference_no = models.CharField(max_length=255, blank=True,null=True)
+    reference_no = models.IntegerField(blank=True, null=True)
     notes = models.TextField(blank=True,null=True)
     currency = models.CharField(max_length=255,null=True)
     cash_journal = models.BooleanField(default=False,null=True)

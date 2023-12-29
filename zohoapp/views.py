@@ -42,7 +42,7 @@ import calendar
 from calendar import HTMLCalendar
 from django.template import loader
 from decimal import Decimal
-
+from django.db.models import Max
 
 def index(request):
 
@@ -14851,10 +14851,12 @@ def create_sales_order(request):
 
 
 
-
-
-
-
+def generate_reference_number():
+    last_record = Journal.objects.order_by('-reference_no').first()
+    if last_record:
+        return last_record.reference_no + 1
+    else:
+        return 1
 
 
 def add_journal(request):
@@ -14870,12 +14872,19 @@ def add_journal(request):
     except company_details.DoesNotExist:
         company_name = ''
         address = ''
+    reference_no = generate_reference_number()
     
     if request.method == 'POST':
         user = request.user
         date = request.POST.get('date')
         journal_no = request.POST.get('journal_no')
-        reference_no = request.POST.get('reference_no')
+        # Check for duplicate journal number
+        if Journal.objects.filter(journal_no=journal_no).exists():
+            messages.error(request, 'Journal number already exists. Please choose a different journal number.')
+            return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors, 'customers': customers,
+                                                         'company_name': company_name, 'address': address,
+                                                         'company': company, 'employee': employee,
+                                                         'reference_no': reference_no})
         notes = request.POST.get('notes')
         currency = request.POST.get('currency')
         cash_journal = request.POST.get('cash_journal') == 'True'
@@ -14888,7 +14897,8 @@ def add_journal(request):
         
         total_debit = 0
         total_credit = 0
-       
+        
+        
 
         journal = Journal(
             user=user,
@@ -14906,7 +14916,7 @@ def add_journal(request):
             credits=credits,
         )
         journal.save()
-        
+       
        
 
         total_debit += float(debits) if debits else 0
@@ -14921,8 +14931,8 @@ def add_journal(request):
 
         return redirect('manual_journal_home')
 
-    return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors,'customers': customers, 'company_name': company_name,'address': address,'company' : company,'employee':employee})
-    
+    return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors,'customers': customers, 'company_name': company_name,'address': address,'company' : company,'employee':employee, 'reference_no': reference_no})
+
 @login_required(login_url='login')
 def journal_account_dropdown(request):
 

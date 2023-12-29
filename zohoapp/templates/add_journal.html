@@ -172,6 +172,21 @@ tr:hover{
     display: none;
    }
   </style>
+
+
+  <div class="text-center">
+    {% if messages %}
+      <div class="alert alert-danger mx-auto" style="max-width: 500px;">
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+  
+                    
 <section style="height: 350vh; overflow: auto;background-color:  #191C24;">
     <div class="container">
         <div class="row justify-content-center">
@@ -213,10 +228,11 @@ tr:hover{
                      
 
 
+                      
+                    
 
 
-
-
+                      
 
 
                       <div class="row mt-2">
@@ -225,19 +241,21 @@ tr:hover{
                         </div>
                         <div class="col-md-6">
                             <input type="text" name="journal_no" id="journal_no" class="form-control text-dark">
+                            <!--<span id="duplicateError" style="color: red; display: none;">Duplicate journal number!</span>-->
                         </div>
                     </div>
+                    
                     
                     <div class="row mt-2">
                         <div class="col-md-3">
                             <label for="reference_no">Reference No:</label>
                         </div>
                         <div class="col-md-6">
-                            <input type="text" name="reference_no" id="reference_no" class="form-control text-dark" readonly>
+                            <input type="text" name="reference_no" value="{{ reference_no }}" class="form-control text-dark" readonly>
                         </div>
                     </div>
                     
-                    <script>
+                    <!--<script>
                         function updateReferenceNumber() {
                             const journalNoInput = document.getElementById('journal_no');
                             const referenceNoInput = document.getElementById('reference_no');
@@ -266,7 +284,7 @@ tr:hover{
                     
                         // Initialize the reference number on page load
                         updateReferenceNumber();
-                    </script>
+                    </script>-->
                     
 
                         <div class="row mt-3 mb-5">
