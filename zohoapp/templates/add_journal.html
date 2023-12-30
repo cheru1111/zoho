@@ -2546,16 +2546,28 @@ function reloadAccount() {
 
         numberCell.innerHTML = rowCount;
         accountCell.innerHTML = `
-            <div>
-                <select name="account" class="form-control text-dark">
-                    <option value="">Select Account</option>
-                    <option id="crt_acc1"></option>
-                    {% for account in accounts %}
-                        <option value="{{ account.account_name }}">{{ account.account_name }}</option>
+        <div id="custom_dropdowns" class="position-relative">
+            <div class="position-absolute bg-success rounded bg-light text-dark  border border-dark" style="margin-top: 3rem;">
+                <div id="custom-dropdown">
+                    <div style="overflow-y: auto;height: 10rem;" name="account">
+                        {% if accounts %}
+                        {% for account in accounts %}
+                            {% if account.user == request.user or account.create_status == 'default' %}
+                                <p class="drop_hovers ps-3 p-2 m-0">{{ account.account_name }}</p>
+                                <span hidden>{{ account.id }}</span>
+                            {% endif %}
                         {% endfor %}
-                  <option value="">
-                </select>
+                    {% else %}
+                        <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed;pointer-events: none;">No accounts are available</h6>
+                    {% endif %}
+                    
+                    </div>
+                </div>
             </div>
+        </div>
+        <input hidden id="account_value" type="text" name="account_id" value="">
+        <input type="text" class="form-control bg-light text-dark" id="account_list" name="account" placeholder="search..." required>
+        
         `;
   rowIndex++;
         descriptionCell.innerHTML = '<input type="text" name="description" class="form-control text-dark">';

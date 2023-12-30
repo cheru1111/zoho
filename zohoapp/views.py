@@ -7628,6 +7628,7 @@ def get_chart_of_account_data(user):
 
     return view_data
 
+
 def chartofaccount_home(request):
     user = request.user
     view = get_chart_of_account_data(user)
@@ -7647,11 +7648,14 @@ def chartofaccount_view(request, id):
 
     return render(request, 'chartofaccount_view.html', context)
 
-login_required(login_url='login')
 def view_chart_of_accounts_all(request):
-    view=Chart_of_Account.objects.filter(user=request.user.id)
-    return render(request,'chartofaccount_home.html',{"view":view})   
-    
+    # Get combined data using the function
+    view_data = get_chart_of_account_data(request.user)
+
+    return render(request, 'chartofaccount_home.html', {"view": view_data}) 
+
+
+ 
 login_required(login_url='login')
 def view_chart_of_accounts_active(request):
     view=Chart_of_Account.objects.filter(status="active",user=request.user.id)
@@ -14850,14 +14854,23 @@ def create_sales_order(request):
 
 
 
+def generate_reference_number(user):
+    last_record = Journal.objects.filter(user=user).order_by('-reference_no').first()
 
-def generate_reference_number():
-    last_record = Journal.objects.order_by('-reference_no').first()
     if last_record:
-        return last_record.reference_no + 1
+        expected_reference_no = last_record.reference_no + 1
     else:
-        return 1
+        expected_reference_no = 1
 
+    if expected_reference_no != 1:
+        # Check for continuity
+        all_reference_numbers = set(Journal.objects.filter(user=user).values_list('reference_no', flat=True))
+        expected_reference_numbers = set(range(1, expected_reference_no))
+
+        if all_reference_numbers != expected_reference_numbers:
+            raise ValidationError("Reference numbers for user {} are not continuous. Please contact support.".format(user))
+
+    return expected_reference_no
 
 def add_journal(request):
     accounts = Chart_of_Account.objects.all()
@@ -14872,7 +14885,7 @@ def add_journal(request):
     except company_details.DoesNotExist:
         company_name = ''
         address = ''
-    reference_no = generate_reference_number()
+    reference_no = generate_reference_number(request.user)
     
     if request.method == 'POST':
         user = request.user

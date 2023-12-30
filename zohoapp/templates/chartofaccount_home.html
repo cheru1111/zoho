@@ -199,27 +199,51 @@
         }).show();
     });
 </script>
-  <div class="col-md-4"></div>
-  <div class="col-md-3">
-    <div class="dropdown d-flex">
-      <a class="btn text-center px-4 pt-2 btn-outline-warning" data-bs-toggle="dropdown" aria-haspopup="true"
-        aria-expanded="false" role="button">
-        <i class="fa fa-filter mt-1"></i>
-      </a>
-      <div class="dropdown-menu m-1">
-        <a class="dropdown-item" href="{% url 'view_chart_of_accounts_all' %}">All</a>
-        <a class="dropdown-item" href="{% url 'view_chart_of_accounts_active' %}">Active</a>
-        <a class="dropdown-item" href="{% url 'view_chart_of_accounts_none' %}">None</a>
-      </div>
-      <a style="height: 5vh; margin-left: 2vh;" class="btn btn-outline-warning text-right px-3 py-2" role="button"
-        style="margin-left: 5px;" href="{% url 'create_new_chart_of_account' %}">
-        <i class="fa fa-plus" style="font-size: large;"></i><span style="font-size: 3vh;">New</span>
-      </a>
+<div class="col-md-4"></div>
+<div class="col-md-3">
+  <div class="dropdown d-flex">
+    <a class="btn text-center px-4 pt-2 btn-outline-warning" data-bs-toggle="dropdown" aria-haspopup="true"
+      aria-expanded="false" role="button">
+      <i class="fa fa-filter mt-1"></i>
+    </a>
+    <div class="dropdown-menu m-1">
+      <a class="dropdown-item filter-option" href="#" data-filter="all">All</a>
+      <a class="dropdown-item filter-option" href="#" data-filter="active">Active</a>
+      <a class="dropdown-item filter-option" href="#" data-filter="inactive">Inactive</a>
     </div>
+    <a style="height: 5vh; margin-left: 2vh;" class="btn btn-outline-warning text-right px-3 py-2" role="button"
+      style="margin-left: 5px;" href="{% url 'create_new_chart_of_account' %}">
+      <i class="fa fa-plus" style="font-size: large;"></i><span style="font-size: 3vh;">New</span>
+    </a>
   </div>
 </div>
 
-
+<script>
+  $(document).ready(function () {
+    var $table = $("#myTable");
+  
+    $(".filter-option").on("click", function (e) {
+      e.preventDefault();
+  
+      var filterValue = $(this).data("filter");
+  
+      switch (filterValue) {
+        case "all":
+          $table.find("tr").show();
+          break;
+        case "active":
+          $table.find("tr[data-status='active']").show();
+          $table.find("tr:not([data-status='active'])").hide();
+          break;
+        case "inactive":
+          $table.find("tr[data-status='inactive']").show();
+          $table.find("tr:not([data-status='inactive'])").hide();
+          break;
+      }
+    });
+  });
+  
+</script>
 
 <div class="row mt-4">
   <div class="col-sm-12">
@@ -235,7 +259,7 @@
       <tbody>
         {% for v in view %}
 
-        <tr>
+        <tr data-status="{{v.status}}">
          
 
           {% if v.parent_account == "GST Payable" %}
@@ -357,7 +381,7 @@
 </script>
 
 
-
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
     integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
     crossorigin="anonymous">
