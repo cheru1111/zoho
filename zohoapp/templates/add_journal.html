@@ -2546,29 +2546,28 @@ function reloadAccount() {
 
         numberCell.innerHTML = rowCount;
         accountCell.innerHTML = `
-        <div id="custom_dropdowns" class="position-relative">
-            <div class="position-absolute bg-success rounded bg-light text-dark  border border-dark" style="margin-top: 3rem;">
-                <div id="custom-dropdown">
-                    <div style="overflow-y: auto;height: 10rem;" name="account">
+        <div id="custom_dropdowns_${rowIndex}" class="position-relative">
+            <div class="position-absolute bg-success rounded bg-light text-dark border border-dark" style="margin-top: 3rem;">
+                <div id="custom-dropdown_${rowIndex}">
+                    <div style="overflow-y: auto; height: 10rem;" name="account">
                         {% if accounts %}
                         {% for account in accounts %}
-                            {% if account.user == request.user or account.create_status == 'default' %}
-                                <p class="drop_hovers ps-3 p-2 m-0">{{ account.account_name }}</p>
-                                <span hidden>{{ account.id }}</span>
-                            {% endif %}
+                        {% if account.user == request.user or account.create_status == 'default' %}
+                            <p class="drop_hovers ps-3 p-2 m-0">{{ account.account_name }}</p>
+                            <span hidden>{{ account.id }}</span>
+                        {% endif %}
                         {% endfor %}
-                    {% else %}
-                        <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed;pointer-events: none;">No accounts are available</h6>
-                    {% endif %}
-                    
+                        {% else %}
+                            <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed;pointer-events: none;">No accounts are available</h6>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
         <input hidden id="account_value" type="text" name="account_id" value="">
         <input type="text" class="form-control bg-light text-dark" id="account_list" name="account" placeholder="search..." required>
-        
-        `;
+    `;
+
   rowIndex++;
         descriptionCell.innerHTML = '<input type="text" name="description" class="form-control text-dark">';
         var options = '';
@@ -2587,6 +2586,17 @@ function reloadAccount() {
         debitsCell.innerHTML = '<input type="number" name="debits" class="form-control text-dark" onchange="calculateTotals()">';
         creditsCell.innerHTML = '<input type="number" name="credits" class="form-control text-dark"onchange="calculateTotals()">';
         actionCell.innerHTML = '<button type="button" class="btn btn-outline-danger p-1" onclick="deleteRow(this)" style = "width:25px; height: 25px; border-radius: 90% "><i class="fa fa-window-close bg-dark text-danger"></i></button>';
+
+        // Initialize custom dropdowns after adding a new row
+    initializeCustomDropdowns(rowCount);
+    }
+
+    function initializeCustomDropdowns(rowCount) {
+        // You need to initialize your custom dropdown scripts here
+        // Use rowCount to target the specific dropdowns in the newly added row
+        // For example:
+        // $('#custom_dropdowns_' + rowCount).dropdownFunction();
+        // $('#custom-dropdown_' + rowCount).anotherDropdownFunction();
     }
 
     function deleteRow(button) {
