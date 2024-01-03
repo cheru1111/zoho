@@ -240,11 +240,57 @@ tr:hover{
                             <label for="journal_no">Journal No:</label>
                         </div>
                         <div class="col-md-6">
-                            <input type="text" name="journal_no" id="journal_no" class="form-control text-dark">
-                            <!--<span id="duplicateError" style="color: red; display: none;">Duplicate journal number!</span>-->
+                            <input type="text" name="journal_no" id="journal_no" class="form-control text-dark" oninput="validateJournalNo()">
+                            <div id="validationMessage" style="color: red;"></div>
                         </div>
                     </div>
                     
+                    <script>
+                        var user1LastJournalNo = "";
+                        var user2LastJournalNo = "";
+                        var lastEntryTime = null;
+                    
+                        function validateJournalNo() {
+                            var journalNoInput = document.getElementById("journal_no");
+                            var validationMessage = document.getElementById("validationMessage");
+                    
+                            var enteredJournalNo = journalNoInput.value;
+                    
+                            if (isValidJournalNo(enteredJournalNo, user1LastJournalNo, /^\d+$/)) {
+                                user1LastJournalNo = enteredJournalNo;
+                                lastEntryTime = new Date();
+                                validationMessage.textContent = "Valid entry: " + enteredJournalNo;
+                            } else if (isValidJournalNo(enteredJournalNo, user2LastJournalNo, /^jn\d{2}$/i)) {
+                                user2LastJournalNo = enteredJournalNo;
+                                lastEntryTime = new Date();
+                                validationMessage.textContent = "Valid entry: " + enteredJournalNo;
+                            } else {
+                                validationMessage.textContent = "Invalid entry. Please follow the specified format and maintain continuity.";
+                            }
+                        }
+                    
+                        function isValidJournalNo(enteredJournalNo, lastJournalNo, pattern) {
+                            if (!pattern.test(enteredJournalNo)) {
+                                return false;
+                            }
+                    
+                            var nextNumber = getNextNumber(enteredJournalNo);
+                    
+                            return lastJournalNo === "" || (nextNumber === getNextNumber(lastJournalNo) + 1 && isValidEntryTime());
+                        }
+                    
+                        function getNextNumber(journalNo) {
+                            // Extract the numeric part and convert it to an integer
+                            return parseInt(journalNo.match(/\d+/)[0]);
+                        }
+                    
+                        function isValidEntryTime() {
+                            // Check if the entry is made after the last entry
+                            var currentTime = new Date();
+                            return lastEntryTime === null || currentTime > lastEntryTime;
+                        }
+                    </script>
+
                     
                     <div class="row mt-2">
                         <div class="col-md-3">
@@ -255,36 +301,7 @@ tr:hover{
                         </div>
                     </div>
                     
-                    <!--<script>
-                        function updateReferenceNumber() {
-                            const journalNoInput = document.getElementById('journal_no');
-                            const referenceNoInput = document.getElementById('reference_no');
-                    
-                            const journalNo = journalNoInput.value;
-                    
-                            // Retrieve the highest reference number used from localStorage
-                            let lastReference = parseInt(localStorage.getItem('lastReference')) || 0;
-                    
-                            console.log(`Journal No: ${journalNo}, Last Reference: ${lastReference}`);
-                    
-                            if (journalNo !== '') {
-                                // Increment the highest reference number
-                                const referenceNumber = lastReference + 1;
-                    
-                                console.log(`New Reference: ${referenceNumber}`);
-                    
-                                referenceNoInput.value = referenceNumber;
-                                localStorage.setItem('lastReference', referenceNumber);
-                            } else {
-                                referenceNoInput.value = '';
-                            }
-                        }
-                    
-                        document.getElementById('journal_no').addEventListener('input', updateReferenceNumber);
-                    
-                        // Initialize the reference number on page load
-                        updateReferenceNumber();
-                    </script>-->
+                   
                     
 
                         <div class="row mt-3 mb-5">
@@ -2527,13 +2544,13 @@ function reloadAccount() {
 
 </script>
 <script>
-  let rowIndex = 1;
-  
+    let rowIndex = 1;
+
     function addRow() {
         var table = document.getElementById("journal_table");
         var rowCount = table.rows.length;
         var row = table.insertRow(rowCount);
-
+    
         var numberCell = row.insertCell(0);
         var accountCell = row.insertCell(1);
         var descriptionCell = row.insertCell(2);
@@ -2541,101 +2558,197 @@ function reloadAccount() {
         var debitsCell = row.insertCell(4);
         var creditsCell = row.insertCell(5);
         var actionCell = row.insertCell(6);
-
+    
         numberCell.style.color = "white";
-
+    
         numberCell.innerHTML = rowCount;
         accountCell.innerHTML = `
         <div id="custom_dropdowns_${rowIndex}" class="position-relative">
             <div class="position-absolute bg-success rounded bg-light text-dark border border-dark" style="margin-top: 3rem;">
                 <div id="custom-dropdown_${rowIndex}">
                     <div style="overflow-y: auto; height: 10rem;" name="account">
-                        {% if accounts %}
-                        {% for account in accounts %}
-                        {% if account.user == request.user or account.create_status == 'default' %}
-                            <p class="drop_hovers ps-3 p-2 m-0">{{ account.account_name }}</p>
-                            <span hidden>{{ account.id }}</span>
-                        {% endif %}
-                        {% endfor %}
-                        {% else %}
-                            <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed;pointer-events: none;">No accounts are available</h6>
-                        {% endif %}
+                        <div id="account_options_${rowIndex}">
+                            {% if accounts %}
+                                {% for account in accounts %}
+                                    {% if account.user == request.user or account.create_status == 'default' %}
+                                        <p class="drop_hovers ps-3 p-2 m-0 account-option" data-account-id="{{ account.id }}" onclick="selectAccount(${rowIndex}, this)">{{ account.account_name }}</p>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No accounts are available</h6>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <input hidden id="account_value" type="text" name="account_id" value="">
-        <input type="text" class="form-control bg-light text-dark" id="account_list" name="account" placeholder="search..." required>
-    `;
-
-  rowIndex++;
+        <input hidden id="account_value_${rowIndex}" type="text" name="account_id" value="">
+        <input type="text" class="form-control bg-light text-dark" id="account_list_${rowIndex}" name="account" placeholder="Search..." oninput="filterAccounts(${rowIndex})" onclick="toggleDropdownVisibility(${rowIndex})" required>
+            `;
+        rowIndex++;
         descriptionCell.innerHTML = '<input type="text" name="description" class="form-control text-dark">';
-        var options = '';
-        options += '<option value="">Select Contact</option>';
-
-        '{% for vendor in vendors %}'
-        options += '<option value="{{ vendor.vendor_display_name }}">{{ vendor.vendor_display_name }}</option>';
-        '{% endfor %}'
-
-        '{% for customer in customers %}'
-        options += '<option value="{{ customer.customerName }}">{{ customer.customerName }}</option>';
-        '{% endfor %}'
-
-        contactCell.innerHTML = '<select name="contact" class="form-control text-dark">' + options + '</select>';
-
+        contactCell.innerHTML = `
+            <div id="custom_dropdown1_${rowIndex}" class="position-relative">
+                <div class="position-absolute bg-success rounded bg-light text-dark border border-dark" style="margin-top: 3rem;">
+                    <div id="custom-dropdown1">
+                        <div style="overflow-y: auto; height: 10rem;" name="contact">
+                            <div id="contact_options_${rowIndex}">
+                                {% if customers %}
+                                    {% for customer in customers %}
+                                        {% if customer.user == request.user %}
+                                            <p class="drop_hovers ps-3 p-2 m-0 contact-option" onclick="selectContact(${rowIndex}, this)">{{ customer.customerName }}</p>
+                                            <span hidden>{{ customer.id }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No customers are available</h6>
+                                {% endif %}
+                                {% if vendors %}
+                                    {% for vendor in vendors %}
+                                        {% if vendor.user == request.user %}
+                                            <p class="drop_hovers ps-3 p-2 m-0 contact-option" onclick="selectContact(${rowIndex}, this)">{{ vendor.vendor_display_name }}</p>
+                                            <span hidden>{{ vendor.id }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No vendors are available</h6>
+                                {% endif %}
+                                {% if employees %}
+                                    {% for employee in employees %}
+                                        {% if employee.user == request.user %}
+                                            <p class="drop_hovers ps-3 p-2 m-0 contact-option" onclick="selectContact(${rowIndex}, this)">{{ employee.first_name }}{{ employee.last_name }}</p>
+                                            <span hidden>{{ employee.id }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No employees are available</h6>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input hidden id="customer_value_${rowIndex}" type="text" name="customer_id" value="">
+                <input type="text" class="form-control bg-light text-dark" id="customer_list_${rowIndex}" name="contact" placeholder="Search..." oninput="filterContacts(${rowIndex})" onclick="toggleDropdownVisibility(${rowIndex})" required>
+            `;
         debitsCell.innerHTML = '<input type="number" name="debits" class="form-control text-dark" onchange="calculateTotals()">';
-        creditsCell.innerHTML = '<input type="number" name="credits" class="form-control text-dark"onchange="calculateTotals()">';
-        actionCell.innerHTML = '<button type="button" class="btn btn-outline-danger p-1" onclick="deleteRow(this)" style = "width:25px; height: 25px; border-radius: 90% "><i class="fa fa-window-close bg-dark text-danger"></i></button>';
-
+        creditsCell.innerHTML = '<input type="number" name="credits" class="form-control text-dark" onchange="calculateTotals()">';
+        actionCell.innerHTML = '<button type="button" class="btn btn-outline-danger p-1" onclick="deleteRow(this)" style="width:25px; height: 25px; border-radius: 90%"><i class="fa fa-window-close bg-dark text-danger"></i></button>';
+    
         // Initialize custom dropdowns after adding a new row
-    initializeCustomDropdowns(rowCount);
+        initializeCustomDropdowns(rowCount);
     }
-
-    function initializeCustomDropdowns(rowCount) {
+    
+    function initializeCustomDropdowns(rowIdx) {
         // You need to initialize your custom dropdown scripts here
         // Use rowCount to target the specific dropdowns in the newly added row
         // For example:
-        // $('#custom_dropdowns_' + rowCount).dropdownFunction();
-        // $('#custom-dropdown_' + rowCount).anotherDropdownFunction();
+        // $('#custom_dropdowns_' + rowIdx).dropdownFunction();
+        // $('#custom-dropdown_' + rowIdx).anotherDropdownFunction();
     }
-
-    function deleteRow(button) {
-        var row = button.parentNode.parentNode;
-        row.parentNode.removeChild(row);
+    
+    function toggleDropdownVisibility(rowIdx) {
+        var dropdownContainer = document.getElementById('custom_dropdowns_' + rowIdx);
+        dropdownContainer.style.display = dropdownContainer.style.display === 'none' ? 'block' : 'none';
     }
-
+    
+    function filterAccounts(rowIdx) {
+        var input, filter, options, i;
+        input = document.getElementById('account_list_' + rowIdx);
+        filter = input.value.toUpperCase();
+        options = document.getElementById('account_options_' + rowIdx).getElementsByClassName('account-option');
+    
+        for (i = 0; i < options.length; i++) {
+            var option = options[i];
+            if (option.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+        }
+    }
+    
+    function filterContacts(rowIdx) {
+        var input, filter, options, i;
+        input = document.getElementById('customer_list_' + rowIdx);
+        filter = input.value.toUpperCase();
+        options = document.getElementById('contact_options_' + rowIdx).getElementsByClassName('contact-option');
+    
+        for (i = 0; i < options.length; i++) {
+            var option = options[i];
+            if (option.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+        }
+    }
+    
+    function selectAccount(rowIdx, selectedOption) {
+        var accountInput = document.getElementById('account_list_' + rowIdx);
+        var accountId = selectedOption.getAttribute('data-account-id');
+        var accountName = selectedOption.innerHTML;
+    
+        accountInput.value = accountName;
+    
+        // Toggle the display of the dropdown box
+        toggleDropdownVisibility(rowIdx);
+    }
+    
+    function selectContact(rowIdx, selectedOption) {
+        var contactInput = document.getElementById('customer_list_' + rowIdx);
+        var contactId = selectedOption.nextElementSibling.innerHTML;
+        var contactName = selectedOption.innerHTML;
+    
+        contactInput.value = contactName;
+    
+        // Toggle the display of the dropdown box
+        toggleDropdownVisibility(rowIdx);
+    
+        // Clear the filter and show all options when a contact is selected
+        filterContacts(rowIdx);
+    }
+    
+    
     function clearForm() {
         var form = document.querySelector('form');
         form.reset();
     }
+    
 
-    function calculateTotals() {
-        var debitInputs = document.querySelectorAll('input[name="debits"]');
-        var creditInputs = document.querySelectorAll('input[name="credits"]');
-        var totalDebit = 0;
-        var totalCredit = 0;
+   function deleteRow(button) {
+    var row = button.parentNode.parentNode;
+    row.parentNode.removeChild(row);
+    calculateTotals(); // Recalculate totals after deleting a row
+}
 
-        debitInputs.forEach(function (input) {
-            totalDebit += parseFloat(input.value) || 0;
-        });
+function calculateTotals() {
+    var debitInputs = document.querySelectorAll('input[name="debits"]');
+    var creditInputs = document.querySelectorAll('input[name="credits"]');
+    var totalDebit = 0;
+    var totalCredit = 0;
 
-        creditInputs.forEach(function (input) {
-            totalCredit += parseFloat(input.value) || 0;
-        });
+    debitInputs.forEach(function (input) {
+        totalDebit += parseFloat(input.value) || 0;
+    });
 
-        document.getElementById('totalDebit').value = totalDebit.toFixed(2);
-        document.getElementById('totalCredit').value = totalCredit.toFixed(2);
+    creditInputs.forEach(function (input) {
+        totalCredit += parseFloat(input.value) || 0;
+    });
 
-        var difference = totalDebit - totalCredit;
+    document.getElementById('totalDebit').value = totalDebit.toFixed(2);
+    document.getElementById('totalCredit').value = totalCredit.toFixed(2);
 
-        if (difference < 0) {
-            document.getElementById('debitDifference').value = Math.abs(difference).toFixed(2);
-            document.getElementById('creditDifference').value = "0.00";
-        } else {
-            document.getElementById('debitDifference').value = "0.00";
-            document.getElementById('creditDifference').value = difference.toFixed(2);
-        }
+    var difference = totalDebit - totalCredit;
+
+    if (difference < 0) {
+        document.getElementById('debitDifference').value = Math.abs(difference).toFixed(2);
+        document.getElementById('creditDifference').value = "0.00";
+    } else {
+        document.getElementById('debitDifference').value = "0.00";
+        document.getElementById('creditDifference').value = difference.toFixed(2);
     }
+}
+
 </script>
 
 <script src="path/to/jquery.min.js"></script>
