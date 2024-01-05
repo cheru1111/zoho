@@ -571,43 +571,46 @@
                 <div class="card" style="background-color: rgb(110, 61, 46); padding-left: 1rem; padding-top: 1rem;">
                   <div class="row text-center">
                     <h2>INFORMATION
-                      <hr>
+                      
                     </h2>
                   </div>
                   
-                  
-
+                
+                  {% for entry in journal_entries %}
+                  <hr>
                   <div class="row mt-2">
                     <div class="col-5"><label for="">Account Name </label></div>
                     <div class="col">
-                      <p class="bold">:{{view.account}}</p>
+                      <p class="bold">:{{entry.account}}</p>
                     </div>
                   </div>
                   <div class="row mt-2">
                     <div class="col-5"><label for="">Description </label></div>
                     <div class="col">
-                      <p class="bold">:{{view.description}}</p>
+                      <p class="bold">:{{entry.description}}</p>
                     </div>
                   </div>
                   <div class="row mt-2">
                     <div class="col-5"><label for="">Contact </label></div>
                     <div class="col">
-                      <p class="bold">:{{view.contact}}</p>
+                      <p class="bold">:{{entry.contact}}</p>
                     </div>
                   </div>
                   <div class="row mt-2">
                     <div class="col-5"><label for="">Credits </label></div>
                     <div class="col">
-                      <p class="bold">:{{view.credits}}</p>
+                      <p class="bold">:{{entry.credits}}</p>
                     </div>
                   </div>
 
                   <div class="row mt-2">
                     <div class="col-5"><label for="">Debits</label></div>
                     <div class="col">
-                      <p class="bold">:{{view.debits}}</p>
+                      <p class="bold">:{{entry.debits}}</p>
                     </div>
                   </div>
+                  {% endfor %}
+                  <hr>
                   <div class="row mt-2">
                     <div class="col-5"><label for="">Total Debit </label></div>
                     <div class="col">
@@ -759,7 +762,7 @@
                         </div>
                       </div>
                       <div>
-                        
+                        {% for view in journal_entries %}
                         <div class="equal-length-container"
                           style="color: black; font-size: small; word-wrap: break-word; margin-bottom: 1vh;">
                           <div class="equal-length-item" style="text-align: center; margin-left: 2px;">
@@ -777,7 +780,7 @@
                           </div>
                           
                         </div>
-                        
+                        {% endfor %}
                       </div>
 
                       <div><br>
@@ -964,19 +967,22 @@
                        
                       </tr>
                     </thead>
+                    {% for view in journal_entries %}
                     <tbody>
                       
                       <tr style="color: black;">
+                        
                         <td style="text-align: center;">{{view.account}}</td>
                         <td style="text-align: center;">{{view.description}}</td>
                         <td style="text-align: center;">{{view.contact}}</td>
                         <td style="text-align: center;">{{view.debits}}</td>
                         <td style="text-align: center;">{{view.credits}}</td>
-                       
+                        
                       </tr>
                       
 
                     </tbody>
+                    {% endfor %}
                   </table><br>
 
                   <div class="invoice-total">
@@ -1144,18 +1150,22 @@
                           
                         </tr>
                       </thead>
+                      {% for view in journal_entries %}
                       <tbody>
                         
                         <tr>
+                          
                           <td class="text-center" style="color:#000">{{ view.account }}</td>
                           <td class="text-center" style="color:#000">{{ view.description}}</td>
                           <td class="text-center" style="color:#000">{{ view.contact }}</td>
                           <td class="text-center" style="color:#000">{{ view.debits }}</td>
                           <td class="text-center" style="color:#000">{{ view.credits }}</td>
-                         
+                          
                         </tr>
                         
+                        
                       </tbody>
+                      {% endfor %}
                     </table>
                   </section>
 
@@ -1367,19 +1377,22 @@
                          
                         </tr>
                       </thead>
+                      {% for view in journal_entries %}
                       <tbody>
 
                         <tr>
+                          
                           <td style="color:black; text-align: center;">{{view.account}}</td>
                           <td style="color:black">{{view.description}}</td>
                           <td style="color:black">{{view.contact}}</td>
                           <td style="color:black">{{view.debits}} </td>
                           <td style="color:black">{{view.credits}} </td>
-                         
+                          
 
                         </tr>
                         
                       </tbody>
+                      {% endfor %}
                     </table><br><br>
                   </section>
 

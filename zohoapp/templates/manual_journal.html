@@ -186,27 +186,37 @@
           </tr>
         </thead>
         <tbody>
-          {% for entry in view %}
-          <tr class="journal-row" data-journal-id="{{ entry.id }}">
-            <td><a href="{% url 'journal_list' entry.id %}">{{ entry.date }}</a></td>
-            <td>{{ entry.journal_no }}</td>
-            <td>{{ entry.contact}}</td>
-            <!--<td>{{ entry.reference_no }}</td>-->
-
-            <td>
-              <div class="note-icon" data-toggle="tooltip" data-placement="top" title="{{ entry.notes }}"><i
-                  class="fas fa-sticky-note"></i></div>
-            </td>
-            <td><i class="fa fa-inr"></i>{{ entry.total_debit }}</td>
-            <td>
-              {% if entry.status == 'save' %}
-              <span class="status save text-light">{{ entry.status }}</span>
+          {% for journal in journals %}
+          <tr class="journal-row" data-journal-id="{{ journal.id }}">
+              <td><a href="{% url 'journal_list' journal.id %}">{{ journal.date }}</a></td>
+              <td>{{ journal.journal_no }}</td>
+              
+              <!-- Display the contact for the first journal entry, assuming there could be multiple entries -->
+              {% if journal_entries %}
+                  <td>{{ journal_entries.0.contact }}</td>
               {% else %}
-              <span class="status" style="color: whitesmoke;">{{ entry.status }}</span>
+                  <td></td>
               {% endif %}
-            </td>
+              
+              <!--<td>{{ entry.reference_no }}</td>-->
+              
+              <td>
+                  <div class="note-icon" data-toggle="tooltip" data-placement="top" title="{{ journal.notes }}">
+                      <i class="fas fa-sticky-note"></i>
+                  </div>
+              </td>
+              
+              <td><i class="fa fa-inr"></i>{{ journal.total_debit }}</td>
+              
+              <td>
+                  {% if journal.status == 'save' %}
+                      <span class="status save text-light">{{ journal.status }}</span>
+                  {% else %}
+                      <span class="status" style="color: whitesmoke;">{{ journal.status }}</span>
+                  {% endif %}
+              </td>
           </tr>
-          {% endfor %}
+      {% endfor %}
         </tbody>
       </table>
     </div>

@@ -14772,11 +14772,20 @@ def view_journal_draft(request):
     }
     return render(request, 'manual_journal.html', context)'''
     
-def manual_journal_home(request):
+'''def manual_journal_home(request):
     view=Journal.objects.filter(user=request.user.id)
     user = request.user
     company = company_details.objects.get(user=user)
-    return render(request,'manual_journal.html',{"view":view,"company":company}) 
+    return render(request,'manual_journal.html',{"view":view,"company":company})'''
+    
+def manual_journal_home(request):
+    user = request.user
+    journals = Journal.objects.filter(user=user.id)
+    journal_entries = JournalEntry.objects.filter(journal__in=journals)
+
+    company = company_details.objects.get(user=user)
+    
+    return render(request, 'manual_journal.html', {"journals": journals, "journal_entries": journal_entries, "company": company}) 
    
 login_required(login_url='login')
 def view_manual_all(request):
@@ -14854,24 +14863,8 @@ def create_sales_order(request):
 
 
 
-def generate_reference_number(user):
-    last_record = Journal.objects.filter(user=user).order_by('-reference_no').first()
 
-    if last_record:
-        expected_reference_no = last_record.reference_no + 1
-    else:
-        expected_reference_no = 1
-
-    if expected_reference_no != 1:
-        # Check for continuity
-        all_reference_numbers = set(Journal.objects.filter(user=user).values_list('reference_no', flat=True))
-        expected_reference_numbers = set(range(1, expected_reference_no))
-
-        if all_reference_numbers != expected_reference_numbers:
-            raise ValidationError("Reference numbers for user {} are not continuous. Please contact support.".format(user))
-
-    return expected_reference_no
-
+'''
 def add_journal(request):
     accounts = Chart_of_Account.objects.all()
     vendors = vendor_table.objects.all()
@@ -14945,7 +14938,162 @@ def add_journal(request):
         return redirect('manual_journal_home')
 
     return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors,'customers': customers, 'company_name': company_name,'address': address,'company' : company,'employee':employee, 'reference_no': reference_no})
+'''
+def generate_reference_number(user):
+    last_record = Journal.objects.filter(user=user).order_by('-reference_no').first()
 
+    if last_record:
+        expected_reference_no = last_record.reference_no + 1
+    else:
+        expected_reference_no = 1
+
+    if expected_reference_no != 1:
+        # Check for continuity
+        all_reference_numbers = set(Journal.objects.filter(user=user).values_list('reference_no', flat=True))
+        expected_reference_numbers = set(range(1, expected_reference_no))
+
+        if all_reference_numbers != expected_reference_numbers:
+            raise ValidationError("Reference numbers for user {} are not continuous. Please contact support.".format(user))
+
+    return expected_reference_no
+
+def is_valid_journal_number(journal_no, user):
+    # Check if the journal number is a valid alphanumeric value or a valid integer
+    if not (journal_no.isalnum() or journal_no.isdigit()):
+        return False
+
+    # Extract the numeric part of the journal number
+    numeric_part = ''.join(char for char in journal_no if char.isdigit())
+
+    # Check if the numeric part is a valid integer
+    if not numeric_part.isdigit():
+        return False
+
+    # Get the highest saved journal number for the user
+    try:
+        highest_journal = Journal.objects.filter(user=user).order_by('-journal_no').first()
+        highest_numeric_part = ''.join(char for char in highest_journal.journal_no if char.isdigit()) if highest_journal else None
+    except Journal.DoesNotExist:
+        # Handle the case where there's no saved journal for the user
+        highest_numeric_part = None
+
+    # Check if the entered journal number follows a continuous sequence
+    if highest_numeric_part is not None and int(numeric_part) == int(highest_numeric_part) + 1:
+        return True
+    elif highest_numeric_part is None and int(numeric_part) == 1:
+        return True
+    else:
+        return False
+
+
+
+
+
+
+
+
+
+
+
+def add_journal(request):
+    accounts = Chart_of_Account.objects.all()
+    vendors = vendor_table.objects.all()
+    customers = customer.objects.all()
+    employee=Payroll.objects.all()
+
+    try:
+        company = company_details.objects.get(user=request.user)
+        company_name = company.company_name
+        address = company.address
+    except company_details.DoesNotExist:
+        company_name = ''
+        address = ''
+        
+    reference_no = generate_reference_number(request.user)
+
+    if request.method == 'POST':
+        user = request.user
+        date = request.POST.get('date')
+        journal_no = request.POST.get('journal_no')
+
+        # Validate the journal number
+        if not is_valid_journal_number(journal_no, user):
+            messages.error(request, 'Invalid journal number format. Please enter a valid numeric journal number.')
+            return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors, 'customers': customers,
+                                                         'company_name': company_name, 'address': address,
+                                                         'company': company, 'employee': employee,
+                                                         'reference_no': reference_no})
+
+        # Check for duplicate journal number
+        if Journal.objects.filter(journal_no=journal_no).exists():
+            messages.error(request, 'Journal number already exists. Please choose a different journal number.')
+            return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors, 'customers': customers,
+                                                         'company_name': company_name, 'address': address,
+                                                         'company': company, 'employee': employee,
+                                                         'reference_no': reference_no})
+
+        notes = request.POST.get('notes')
+        currency = request.POST.get('currency')
+        cash_journal = request.POST.get('cash_journal') == 'True'
+
+        attachment = request.FILES.get('attachment')  
+
+        journal = Journal(
+            user=user,
+            date=date,
+            journal_no=journal_no,
+            reference_no=reference_no,
+            notes=notes,
+            currency=currency,
+            cash_journal=cash_journal,
+            attachment=attachment  
+        )
+        journal.save()
+
+        account_list = request.POST.getlist('account')
+        description_list = request.POST.getlist('description')
+        contact_list = request.POST.getlist('contact')
+        debits_list = request.POST.getlist('debits')
+        credits_list = request.POST.getlist('credits')
+
+        total_debit = 0
+        total_credit = 0
+
+        for i in range(len(account_list)):
+            account = account_list[i]
+            description = description_list[i]
+            contact = contact_list[i]
+            debits = debits_list[i]
+            credits = credits_list[i]
+
+            journal_entry = JournalEntry(
+                user=user,
+                journal=journal,
+                account=account,
+                description=description,
+                contact=contact,
+                debits=debits,
+                credits=credits
+            )
+            journal_entry.save()
+
+            total_debit += float(debits) if debits else 0
+            total_credit += float(credits) if credits else 0
+
+        difference = total_debit - total_credit
+
+        journal.total_debit = total_debit
+        journal.total_credit = total_credit
+        journal.difference = difference
+        journal.save()
+
+        return redirect('manual_journal_home')
+
+    return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors, 'customers': customers,
+                                             'company_name': company_name, 'address': address,
+                                             'company': company, 'employee': employee,
+                                             'reference_no': reference_no})
+    
 @login_required(login_url='login')
 def journal_account_dropdown(request):
 
@@ -15036,11 +15184,19 @@ def create_account_jrnl(request):
 
     return render(request, 'journal_list.html', context)'''
 
-def journal_list(request,id):
+'''def journal_list(request,id):
     view=Journal.objects.get(id=id)
     views=Journal.objects.filter(user=request.user.id)
     company=company_details.objects.get(user_id=request.user.id)
     context={'view':view,'views':views,'company':company}
+    return render(request, 'journal_list.html', context)'''
+    
+def journal_list(request, id):
+    view = Journal.objects.get(id=id)
+    journal_entries = JournalEntry.objects.filter(journal=view)
+    views = Journal.objects.filter(user=request.user.id)
+    company = company_details.objects.get(user_id=request.user.id)
+    context = {'view': view, 'views': views, 'company': company, 'journal_entries': journal_entries}
     return render(request, 'journal_list.html', context)
     
 
@@ -15223,8 +15379,91 @@ def delete_journal(request, journal_id):
         return JsonResponse({'message': 'Journal deleted successfully.'})
     except Journal.DoesNotExist:
         return JsonResponse({'message': 'Journal not found.'})
-    
+
+
 def edit_journal(request, journal_id):
+    journal = get_object_or_404(Journal, id=journal_id)
+    accounts = Chart_of_Account.objects.all()
+    vendors = vendor_table.objects.all()
+    customers = customer.objects.all()
+    employee = Payroll.objects.all()
+
+    try:
+        company = company_details.objects.get(user=request.user)
+        company_name = company.company_name
+        address = company.address
+    except company_details.DoesNotExist:
+        company_name = ''
+        address = ''
+
+    if request.method == 'POST':
+        date = request.POST.get('date')
+        journal_no = request.POST.get('journal_no')
+        #reference_no = request.POST.get('reference_no')
+        notes = request.POST.get('notes')
+        currency = request.POST.get('currency')
+        cash_journal = request.POST.get('cash_journal') == 'True'
+
+        journal.date = date
+        journal.journal_no = journal_no
+        #journal.reference_no = reference_no
+        journal.notes = notes
+        journal.currency = currency
+        journal.cash_journal = cash_journal       
+        journal.user = request.user
+        old=journal.attachment
+        new = request.FILES.get('attachment')
+        if old !=None and new==None:
+            journal.attachment=old
+        else:
+            journal.attachment=new            
+        journal.save()
+
+        account_list = request.POST.getlist('account')
+        description_list = request.POST.getlist('description')
+        contact_list = request.POST.getlist('contact')
+        debits_list = request.POST.getlist('debits')
+        credits_list = request.POST.getlist('credits')
+
+        total_debit = 0
+        total_credit = 0
+
+        JournalEntry.objects.filter(journal=journal).delete()
+
+        for i in range(len(account_list)):
+            account = account_list[i]
+            description = description_list[i]
+            contact = contact_list[i]
+            debits = debits_list[i]
+            credits = credits_list[i]
+
+            journal_entry = JournalEntry(
+                journal=journal,
+                account=account,
+                description=description,
+                contact=contact,
+                debits=debits,
+                credits=credits
+            )
+            journal_entry.save()
+
+            total_debit += float(debits) if debits else 0
+            total_credit += float(credits) if credits else 0
+
+        difference = total_debit - total_credit
+
+        journal.total_debit = total_debit
+        journal.total_credit = total_credit
+        journal.difference = difference
+        journal.save()
+
+        return redirect('journal_list',id=journal_id)
+
+    return render(request, 'edit_journal.html', {'journal': journal, 'accounts': accounts, 'vendors': vendors, 'customers': customers, 'company_name': company_name,'address': address,'company' : company, 'employee': employee})
+
+
+    
+'''def edit_journal(request, journal_id):
     accounts = Chart_of_Account.objects.all()
     vendors = vendor_table.objects.all()
     customers = customer.objects.all()
@@ -15292,7 +15531,7 @@ def edit_journal(request, journal_id):
 
     except Journal.DoesNotExist:
         # Handle the case where the journal entry with the given ID does not exist
-        return HttpResponse("Journal entry not found", status=404)
+        return HttpResponse("Journal entry not found", status=404)'''
 def save_pdf(request):
     if request.method == 'POST':
         pdf_data = request.POST.get('pdf_data')

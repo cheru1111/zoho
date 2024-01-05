@@ -251,10 +251,11 @@ tr:hover{
               </tr>
             </thead>
             <tbody>
-              
+                {% for journal_entry in journal.journalentry_set.all %}
               <tr>
                 <td class="text-white">{{ forloop.counter }}</td>
                 <td>
+                    
                     <div id="custom_dropdowns" class="position-relative">
                         <div class="position-absolute bg-success rounded bg-light text-dark  border border-dark" style="margin-top: 3rem;">
                             <div id="custom-dropdown">
@@ -275,7 +276,7 @@ tr:hover{
                         </div>
                     </div>
                     <input hidden id="account_value" type="text" name="account_id" >
-                    <input type="text" class="form-control bg-light text-dark" id="account_list" name="account" placeholder="search..."value="{{ journal.account}}" required>
+                    <input type="text" class="form-control bg-light text-dark" id="account_list" name="account" placeholder="search..."value="{{ journal_entry.account}}" required>
                   <script>
                     $(document).ready(function(){
                       var date = new Date().toISOString().split('T')[0]
@@ -313,7 +314,7 @@ tr:hover{
                   
                 </td>
                 <td><input type="text" name="description" class="form-control text-dark"
-                    value="{{ journal.description }}"></td>
+                    value="{{ journal_entry.description }}"></td>
                 <td>
                     <div id="custom_dropdown1" class="position-relative">
                         <div class="position-absolute bg-success rounded bg-light text-dark border border-dark" style="margin-top: 3rem;">
@@ -354,7 +355,7 @@ tr:hover{
                         </div>
                     </div>
                     <input hidden id="customer_value" type="text" name="customer_id" value="">
-                    <input type="text" class="form-control bg-light text-dark" id="customer_list" name="contact" placeholder="search..." value="{{ journal.contact}}" required>
+                    <input type="text" class="form-control bg-light text-dark" id="customer_list" name="contact" placeholder="search..." value="{{ journal_entry.contact}}" required>
                   <!--<input hidden id="vendor_value" type="text" name="vendor_id" value="">
                   <input type="text" class="form-control bg-light text-dark" id="vendor_list" name="vendor_name" placeholder="search..." required>
                   <input hidden id="employee_value" type="text" name="employee_id" value="">
@@ -463,15 +464,15 @@ tr:hover{
                       })
                 </script>
                 </td>
-                <td><input type="number" name="debits" class="form-control text-dark" value="{{ journal.debits }}"
+                <td><input type="number" name="debits" class="form-control text-dark" value="{{ journal_entry.debits }}"
                     onchange="calculateTotals()"></td>
                 <td><input type="number" name="credits" class="form-control text-dark"
-                    value="{{ journal.credits }}" onchange="calculateTotals()"></td>
+                    value="{{ journal_entry.credits }}" onchange="calculateTotals()"></td>
                 <td><button type="button" class="btn btn-outline-danger p-1" onclick="deleteRow(this)"
                     style="width:25px; height: 25px; border-radius: 90% ">
                     <i class="fa fa-window-close bg-dark text-danger"></i></button></td>
               </tr>
-              
+              {% endfor %}
             </tbody>
           </table>
           <button type="button" style="color: rgb(218, 164, 48);" class="btn btn-outline-secondary ml-1 text-capitalize"

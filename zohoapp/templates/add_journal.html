@@ -240,56 +240,12 @@ tr:hover{
                             <label for="journal_no">Journal No:</label>
                         </div>
                         <div class="col-md-6">
-                            <input type="text" name="journal_no" id="journal_no" class="form-control text-dark" oninput="validateJournalNo()">
-                            <div id="validationMessage" style="color: red;"></div>
+                            <input type="text" name="journal_no"  class="form-control text-dark">
                         </div>
                     </div>
                     
-                    <script>
-                        var user1LastJournalNo = "";
-                        var user2LastJournalNo = "";
-                        var lastEntryTime = null;
+                
                     
-                        function validateJournalNo() {
-                            var journalNoInput = document.getElementById("journal_no");
-                            var validationMessage = document.getElementById("validationMessage");
-                    
-                            var enteredJournalNo = journalNoInput.value;
-                    
-                            if (isValidJournalNo(enteredJournalNo, user1LastJournalNo, /^\d+$/)) {
-                                user1LastJournalNo = enteredJournalNo;
-                                lastEntryTime = new Date();
-                                validationMessage.textContent = "Valid entry: " + enteredJournalNo;
-                            } else if (isValidJournalNo(enteredJournalNo, user2LastJournalNo, /^jn\d{2}$/i)) {
-                                user2LastJournalNo = enteredJournalNo;
-                                lastEntryTime = new Date();
-                                validationMessage.textContent = "Valid entry: " + enteredJournalNo;
-                            } else {
-                                validationMessage.textContent = "Invalid entry. Please follow the specified format and maintain continuity.";
-                            }
-                        }
-                    
-                        function isValidJournalNo(enteredJournalNo, lastJournalNo, pattern) {
-                            if (!pattern.test(enteredJournalNo)) {
-                                return false;
-                            }
-                    
-                            var nextNumber = getNextNumber(enteredJournalNo);
-                    
-                            return lastJournalNo === "" || (nextNumber === getNextNumber(lastJournalNo) + 1 && isValidEntryTime());
-                        }
-                    
-                        function getNextNumber(journalNo) {
-                            // Extract the numeric part and convert it to an integer
-                            return parseInt(journalNo.match(/\d+/)[0]);
-                        }
-                    
-                        function isValidEntryTime() {
-                            // Check if the entry is made after the last entry
-                            var currentTime = new Date();
-                            return lastEntryTime === null || currentTime > lastEntryTime;
-                        }
-                    </script>
 
                     
                     <div class="row mt-2">
@@ -2628,7 +2584,7 @@ function reloadAccount() {
                     </div>
                 </div>
                 <input hidden id="customer_value_${rowIndex}" type="text" name="customer_id" value="">
-                <input type="text" class="form-control bg-light text-dark" id="customer_list_${rowIndex}" name="contact" placeholder="Search..." oninput="filterContacts(${rowIndex})" onclick="toggleDropdownVisibility(${rowIndex})" required>
+                <input type="text" class="form-control bg-light text-dark" id="customer_list_${rowIndex}" name="contact" placeholder="Search..." oninput="filterContacts(${rowIndex})"  onclick="toggleDropdownVisibility(${rowIndex})" required>
             `;
         debitsCell.innerHTML = '<input type="number" name="debits" class="form-control text-dark" onchange="calculateTotals()">';
         creditsCell.innerHTML = '<input type="number" name="credits" class="form-control text-dark" onchange="calculateTotals()">';
@@ -2696,16 +2652,13 @@ function reloadAccount() {
     
     function selectContact(rowIdx, selectedOption) {
         var contactInput = document.getElementById('customer_list_' + rowIdx);
-        var contactId = selectedOption.nextElementSibling.innerHTML;
+        var contactId = selectedOption.getAttribute('data-contact-id');
         var contactName = selectedOption.innerHTML;
     
         contactInput.value = contactName;
     
         // Toggle the display of the dropdown box
         toggleDropdownVisibility(rowIdx);
-    
-        // Clear the filter and show all options when a contact is selected
-        filterContacts(rowIdx);
     }
     
     

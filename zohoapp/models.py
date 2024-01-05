@@ -1426,24 +1426,21 @@ class Journal(models.Model):
     total_credit = models.DecimalField(max_digits=10, decimal_places=2, default=0,null=True)
     difference = models.DecimalField(max_digits=10, decimal_places=2, default=0,null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft',null=True)
-    account = models.CharField(max_length=200,null=True)
-    description = models.TextField(null=True)
-    contact = models.CharField(max_length=200,null=True)
-    debits = models.DecimalField(max_digits=10, decimal_places=2,null=True)
-    credits = models.DecimalField(max_digits=10, decimal_places=2,null=True)   
+    first_journal_entry = models.IntegerField(default=0)  # Add this field  
 
     def __str__(self):
         return self.journal_no
     
-'''class JournalIdModel(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True,blank=True)
-    pattern = models.CharField(max_length=255,null=True)
-    ref_number = models.CharField(max_length=255,null=True)
-    jour_rec_number = models.CharField(max_length=255,null=True)'''    
+  
 
 class JournalEntry(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     journal = models.ForeignKey(Journal, on_delete=models.CASCADE,null=True)
+    account = models.CharField(max_length=200,null=True)
+    description = models.TextField(null=True)
+    contact = models.CharField(max_length=200,null=True)
+    debits = models.DecimalField(max_digits=10, decimal_places=2,null=True)
+    credits = models.DecimalField(max_digits=10, decimal_places=2,null=True) 
     
 class JournalComment(models.Model):
     journal = models.ForeignKey(Journal, related_name='comments', on_delete=models.CASCADE)
