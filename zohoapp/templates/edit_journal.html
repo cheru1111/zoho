@@ -2432,13 +2432,13 @@ tr:hover{
 
 </script>
 <script>
-   let rowIndex = 1;
-  
+    let rowIndex = 1;
+
     function addRow() {
         var table = document.getElementById("journal_table");
         var rowCount = table.rows.length;
         var row = table.insertRow(rowCount);
-
+    
         var numberCell = row.insertCell(0);
         var accountCell = row.insertCell(1);
         var descriptionCell = row.insertCell(2);
@@ -2446,46 +2446,158 @@ tr:hover{
         var debitsCell = row.insertCell(4);
         var creditsCell = row.insertCell(5);
         var actionCell = row.insertCell(6);
-
+    
         numberCell.style.color = "white";
-
+    
         numberCell.innerHTML = rowCount;
         accountCell.innerHTML = `
-            <div>
-                <select name="account" class="form-control text-dark">
-                    <option value="">Select Account</option>
-                    <option id="crt_acc1"></option>
-                    {% for account in accounts %}
-                        <option value="{{ account.account_name }}">{{ account.account_name }}</option>
-                        {% endfor %}
-                  <option value="">
-                </select>
+        <div id="custom_dropdowns_${rowIndex}" class="position-relative">
+            <div class="position-absolute bg-success rounded bg-light text-dark border border-dark" style="margin-top: 3rem;">
+                <div id="custom-dropdown_${rowIndex}">
+                    <div style="overflow-y: auto; height: 10rem;" name="account">
+                        <div id="account_options_${rowIndex}">
+                            {% if accounts %}
+                                {% for account in accounts %}
+                                    {% if account.user == request.user or account.create_status == 'default' %}
+                                        <p class="drop_hovers ps-3 p-2 m-0 account-option" data-account-id="{{ account.id }}" onclick="selectAccount(${rowIndex}, this)">{{ account.account_name }}</p>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No accounts are available</h6>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
             </div>
-        `;
-  rowIndex++;
+        </div>
+        <input hidden id="account_value_${rowIndex}" type="text" name="account_id" value="">
+        <input type="text" class="form-control bg-light text-dark" id="account_list_${rowIndex}" name="account" placeholder="Search..." oninput="filterAccounts(${rowIndex})" onclick="toggleDropdownVisibility(${rowIndex})" required>
+            `;
+        rowIndex++;
         descriptionCell.innerHTML = '<input type="text" name="description" class="form-control text-dark">';
-        var options = '';
-        options += '<option value="">Select Contact</option>';
-
-        '{% for vendor in vendors %}'
-        options += '<option value="{{ vendor.vendor_display_name }}">{{ vendor.vendor_display_name }}</option>';
-        '{% endfor %}'
-
-        '{% for customer in customers %}'
-        options += '<option value="{{ customer.customerName }}">{{ customer.customerName }}</option>';
-        '{% endfor %}'
-
-        contactCell.innerHTML = '<select name="contact" class="form-control text-dark">' + options + '</select>';
-
+        contactCell.innerHTML = `
+            <div id="custom_dropdown1_${rowIndex}" class="position-relative">
+                <div class="position-absolute bg-success rounded bg-light text-dark border border-dark" style="margin-top: 3rem;">
+                    <div id="custom-dropdown1">
+                        <div style="overflow-y: auto; height: 10rem;" name="contact">
+                            <div id="contact_options_${rowIndex}">
+                                {% if customers %}
+                                    {% for customer in customers %}
+                                        {% if customer.user == request.user %}
+                                            <p class="drop_hovers ps-3 p-2 m-0 contact-option" onclick="selectContact(${rowIndex}, this)">{{ customer.customerName }}</p>
+                                            <span hidden>{{ customer.id }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No customers are available</h6>
+                                {% endif %}
+                                {% if vendors %}
+                                    {% for vendor in vendors %}
+                                        {% if vendor.user == request.user %}
+                                            <p class="drop_hovers ps-3 p-2 m-0 contact-option" onclick="selectContact(${rowIndex}, this)">{{ vendor.vendor_display_name }}</p>
+                                            <span hidden>{{ vendor.id }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No vendors are available</h6>
+                                {% endif %}
+                                {% if employees %}
+                                    {% for employee in employees %}
+                                        {% if employee.user == request.user %}
+                                            <p class="drop_hovers ps-3 p-2 m-0 contact-option" onclick="selectContact(${rowIndex}, this)">{{ employee.first_name }}{{ employee.last_name }}</p>
+                                            <span hidden>{{ employee.id }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No employees are available</h6>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input hidden id="customer_value_${rowIndex}" type="text" name="customer_id" value="">
+                <input type="text" class="form-control bg-light text-dark" id="customer_list_${rowIndex}" name="contact" placeholder="Search..." oninput="filterContacts(${rowIndex})"  onclick="toggleDropdownVisibility(${rowIndex})" required>
+            `;
         debitsCell.innerHTML = '<input type="number" name="debits" class="form-control text-dark" onchange="calculateTotals()">';
-        creditsCell.innerHTML = '<input type="number" name="credits" class="form-control text-dark"onchange="calculateTotals()">';
-        actionCell.innerHTML = '<button type="button" class="btn btn-outline-danger p-1" onclick="deleteRow(this)" style = "width:25px; height: 25px; border-radius: 90% "><i class="fa fa-window-close bg-dark text-danger"></i></button>';
+        creditsCell.innerHTML = '<input type="number" name="credits" class="form-control text-dark" onchange="calculateTotals()">';
+        actionCell.innerHTML = '<button type="button" class="btn btn-outline-danger p-1" onclick="deleteRow(this)" style="width:25px; height: 25px; border-radius: 90%"><i class="fa fa-window-close bg-dark text-danger"></i></button>';
+    
+        // Initialize custom dropdowns after adding a new row
+        initializeCustomDropdowns(rowCount);
+    }
+    
+    function initializeCustomDropdowns(rowIdx) {
+        // You need to initialize your custom dropdown scripts here
+        // Use rowCount to target the specific dropdowns in the newly added row
+        // For example:
+        // $('#custom_dropdowns_' + rowIdx).dropdownFunction();
+        // $('#custom-dropdown_' + rowIdx).anotherDropdownFunction();
+    }
+    
+    function toggleDropdownVisibility(rowIdx) {
+        var dropdownContainer = document.getElementById('custom_dropdowns_' + rowIdx);
+        dropdownContainer.style.display = dropdownContainer.style.display === 'none' ? 'block' : 'none';
+    }
+    
+    function filterAccounts(rowIdx) {
+        var input, filter, options, i;
+        input = document.getElementById('account_list_' + rowIdx);
+        filter = input.value.toUpperCase();
+        options = document.getElementById('account_options_' + rowIdx).getElementsByClassName('account-option');
+    
+        for (i = 0; i < options.length; i++) {
+            var option = options[i];
+            if (option.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+        }
+    }
+    
+    function filterContacts(rowIdx) {
+        var input, filter, options, i;
+        input = document.getElementById('customer_list_' + rowIdx);
+        filter = input.value.toUpperCase();
+        options = document.getElementById('contact_options_' + rowIdx).getElementsByClassName('contact-option');
+    
+        for (i = 0; i < options.length; i++) {
+            var option = options[i];
+            if (option.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+        }
+    }
+    
+    function selectAccount(rowIdx, selectedOption) {
+        var accountInput = document.getElementById('account_list_' + rowIdx);
+        var accountId = selectedOption.getAttribute('data-account-id');
+        var accountName = selectedOption.innerHTML;
+    
+        accountInput.value = accountName;
+    
+        // Toggle the display of the dropdown box
+        toggleDropdownVisibility(rowIdx);
+    }
+    
+    function selectContact(rowIdx, selectedOption) {
+        var contactInput = document.getElementById('customer_list_' + rowIdx);
+        var contactId = selectedOption.getAttribute('data-contact-id');
+        var contactName = selectedOption.innerHTML;
+    
+        contactInput.value = contactName;
+    
+        // Toggle the display of the dropdown box
+        toggleDropdownVisibility(rowIdx);
     }
 
-  function deleteRow(button) {
-    var row = button.parentNode.parentNode;
-    row.parentNode.removeChild(row);
-  }
+    function deleteRow(button) {
+        var row = button.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+        calculateTotals(); // Recalculate totals after deleting a row
+    }
 
   function clearForm() {
     var form = document.querySelector('form');
@@ -2499,11 +2611,11 @@ tr:hover{
     var totalCredit = 0;
 
     debitInputs.forEach(function (input) {
-      totalDebit += parseFloat(input.value) || 0;
+        totalDebit += parseFloat(input.value) || 0;
     });
 
     creditInputs.forEach(function (input) {
-      totalCredit += parseFloat(input.value) || 0;
+        totalCredit += parseFloat(input.value) || 0;
     });
 
     document.getElementById('totalDebit').value = totalDebit.toFixed(2);
@@ -2512,13 +2624,14 @@ tr:hover{
     var difference = totalDebit - totalCredit;
 
     if (difference < 0) {
-      document.getElementById('debitDifference').value = Math.abs(difference).toFixed(2);
-      document.getElementById('creditDifference').value = "0.00";
+        document.getElementById('debitDifference').value = Math.abs(difference).toFixed(2);
+        document.getElementById('creditDifference').value = "0.00";
     } else {
-      document.getElementById('debitDifference').value = "0.00";
-      document.getElementById('creditDifference').value = difference.toFixed(2);
+        document.getElementById('debitDifference').value = "0.00";
+        document.getElementById('creditDifference').value = difference.toFixed(2);
     }
-  }
+}
+
 </script>
 <script>
     $(document).ready(function() {

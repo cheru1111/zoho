@@ -15018,7 +15018,7 @@ def add_journal(request):
 
         # Validate the journal number
         if not is_valid_journal_number(journal_no, user):
-            messages.error(request, 'Invalid journal number format. Please enter a valid numeric journal number.')
+            messages.error(request, 'Invalid journal number format. Please enter a valid numeric journal number.Or please enter the continuous number')
             return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors, 'customers': customers,
                                                          'company_name': company_name, 'address': address,
                                                          'company': company, 'employee': employee,

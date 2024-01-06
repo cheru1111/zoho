@@ -186,33 +186,31 @@
           </tr>
         </thead>
         <tbody>
-          {% for journal in journals %}
-          <tr class="journal-row" data-journal-id="{{ journal.id }}">
-              <td><a href="{% url 'journal_list' journal.id %}">{{ journal.date }}</a></td>
-              <td>{{ journal.journal_no }}</td>
+          {% for journal in journal_entries %}
+          <tr class="journal-row" data-journal-id="{{ journal.journalid }}">
+              <td><a href="{% url 'journal_list' journal.journal.id %}">{{ journal.journal.date }}</a></td>
+              <td>{{ journal.journal.journal_no }}</td>
               
               <!-- Display the contact for the first journal entry, assuming there could be multiple entries -->
-              {% if journal_entries %}
-                  <td>{{ journal_entries.0.contact }}</td>
-              {% else %}
-                  <td></td>
-              {% endif %}
+             
+              <td>{{ journal.contact }}</td>
+             
               
               <!--<td>{{ entry.reference_no }}</td>-->
               
               <td>
-                  <div class="note-icon" data-toggle="tooltip" data-placement="top" title="{{ journal.notes }}">
+                  <div class="note-icon" data-toggle="tooltip" data-placement="top" title="{{ journal.journal.notes }}">
                       <i class="fas fa-sticky-note"></i>
                   </div>
               </td>
               
-              <td><i class="fa fa-inr"></i>{{ journal.total_debit }}</td>
+              <td><i class="fa fa-inr"></i>{{ journal.journal.total_debit }}</td>
               
               <td>
-                  {% if journal.status == 'save' %}
-                      <span class="status save text-light">{{ journal.status }}</span>
+                  {% if journal.journal.status == 'save' %}
+                      <span class="status save text-light">{{ journal.journal.status }}</span>
                   {% else %}
-                      <span class="status" style="color: whitesmoke;">{{ journal.status }}</span>
+                      <span class="status" style="color: whitesmoke;">{{ journal.journal.status }}</span>
                   {% endif %}
               </td>
           </tr>
