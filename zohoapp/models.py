@@ -844,6 +844,7 @@ class payment_made(models.Model):
     
     
 class Payroll(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     title = models.CharField(max_length=100,null=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100,null=True)
@@ -873,6 +874,8 @@ class Payroll(models.Model):
     status=models.CharField(max_length=200,default='Active')
     isTDS=models.CharField(max_length=200,null=True)
     TDS = models.IntegerField(null=True,default=0)
+    age = models.PositiveIntegerField(default=0)
+    salaryrange = models.CharField(max_length=10, choices=[('1-10', '1-10'), ('10-15', '10-15'), ('15-31', '15-31')], default='1-10')
     
     
 class Bankdetails(models.Model):
@@ -1408,7 +1411,10 @@ class LoanAttach(models.Model):
     
     
 #-------------------------------------------------Mirna--------Manual journal------------------------------------------
-    
+class ReferenceNumberCounter(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    counter = models.IntegerField(default=1)  
+      
 class Journal(models.Model):
     STATUS_CHOICES = (
         ('draft', 'Draft'),

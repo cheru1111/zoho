@@ -171,6 +171,9 @@ tr:hover{
    #custom_dropdowns{
     display: none;
    }
+   #custom_dropdown1{
+    display: none;
+   }
   </style>
 
 
@@ -190,13 +193,6 @@ tr:hover{
 <section style="height: 350vh; overflow: auto;background-color:  #191C24;">
     <div class="container">
         <div class="row justify-content-center">
-            <!-- <div class="card radius-15">
-              <div class="card-body">
-                  <div class="card-title">
-                    <h2 class="mb-0 text-uppercase text-right"> New Journal</h2>
-                  </div>
-              </div>
-            </div> -->
             <h2 class="mb-0 text-uppercase text-right"> New Journal</h2>
             <div class="col-md-12">
                 <form method="POST" action="{% url 'add_journal' %}" class="custom-form" enctype="multipart/form-data">
@@ -223,18 +219,6 @@ tr:hover{
                         });
                       </script>
 
-
-
-                     
-
-
-                      
-                    
-
-
-                      
-
-
                       <div class="row mt-2">
                         <div class="col-md-3">
                             <label for="journal_no">Journal No:</label>
@@ -243,11 +227,7 @@ tr:hover{
                             <input type="text" name="journal_no"  class="form-control text-dark">
                         </div>
                     </div>
-                    
-                
-                    
-
-                    
+                   
                     <div class="row mt-2">
                         <div class="col-md-3">
                             <label for="reference_no">Reference No:</label>
@@ -257,9 +237,6 @@ tr:hover{
                         </div>
                     </div>
                     
-                   
-                    
-
                         <div class="row mt-3 mb-5">
                           <div class="col-md-3">
                                 <label for="">Currency:</label>
@@ -303,17 +280,17 @@ tr:hover{
                                 <td>
                                     <div id="custom_dropdowns" class="position-relative">
                                         <div class="position-absolute bg-success rounded bg-light text-dark  border border-dark" style="margin-top: 3rem;">
-                                            <div id="custom-dropdown">
+                                            <div id="custom-dropdowns">
                                                 <div style="overflow-y: auto;height: 10rem;" name="account">
                                                     {% if accounts %}
                                                     {% for account in accounts %}
                                                         {% if account.user == request.user or account.create_status == 'default' %}
-                                                            <p class="drop_hovers ps-3 p-2 m-0">{{ account.account_name }}</p>
+                                                            <p class="account_drop_hovers ps-3 p-2 m-0">{{ account.account_name }}</p>
                                                             <span hidden>{{ account.id }}</span>
                                                         {% endif %}
                                                     {% endfor %}
                                                 {% else %}
-                                                    <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed;pointer-events: none;">No accounts are available</h6>
+                                                    <h6 class="account_drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed;pointer-events: none;">No accounts are available</h6>
                                                 {% endif %}
                                                 
                                                 </div>
@@ -337,7 +314,7 @@ tr:hover{
                                         $(this).show()
                                       })
                                     })
-                                    $('.drop_hovers').on('click',function(){
+                                    $('.account_drop_hovers').on('click',function(){
                                       $('#account_list').val($(this).text())
                                       $('#account_value').val($(this).next('span').text())
                                     })
@@ -356,25 +333,14 @@ tr:hover{
                                         }
                                       })
                                     })</script>
-                                  
-                                    <!--<div class="search_select_box">
-                                        <select name="account" class="selectpicker w-100" data-live-search="true">
-                                            <option value="">Select Account</option>
-                                            <option id="crt_acc"></option>
-                                            {% for account in accounts %}
-                                                <option value="{{ account.account_name }}">{{ account.account_name }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>-->
-                            
-                                
+                                 
                                 </td>
                                 <td><input type="text" name="description" class="form-control text-dark"></td>
                                 <td>
                                     <div id="custom_dropdown1" class="position-relative">
                                         <div class="position-absolute bg-success rounded bg-light text-dark border border-dark" style="margin-top: 3rem;">
-                                            <div id="custom-dropdown">
-                                                <div style="overflow-y: auto; height: 10rem;">
+                                            <div id="custom-dropdown1">
+                                                <div style="overflow-y: auto; height: 10rem;" name="contact">
                                                     {% if customers %}
                                                         {% for customer in customers %}
                                                             {% if customer.user == request.user %}
@@ -396,20 +362,22 @@ tr:hover{
                                                         <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No vendors are available</h6>
                                                     {% endif %}
                                                     {% if employees %}
-                                                        {% for employee in employees %}
-                                                            {% if employee.user == request.user %}
-                                                                <p class="drop_hovers ps-3 p-2 m-0">{{ employee.first_name }}{{ employee.last_name }}</p>
-                                                                <span hidden>{{ employee.id }}</span>
+                                                        {% for emp in employees %}
+                                                            {% if emp.user == request.user %}
+                                                                <p class="drop_hovers ps-3 p-2 m-0">{{ emp.first_name }}</p>
+                                                                <span hidden>{{ emp.id }}</span>
                                                             {% endif %}
                                                         {% endfor %}
                                                     {% else %}
                                                         <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No employees are available</h6>
                                                     {% endif %}
+                                                    
+
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <input hidden id="customer_value" type="text" name="customer_id" value="">
+                                    <input hidden id="customer_value" type="text" name="customer_id">
                                     <input type="text" class="form-control bg-light text-dark" id="customer_list" name="contact" placeholder="search..." required>
                                   <!--<input hidden id="vendor_value" type="text" name="vendor_id" value="">
                                   <input type="text" class="form-control bg-light text-dark" id="vendor_list" name="vendor_name" placeholder="search..." required>
@@ -518,18 +486,7 @@ tr:hover{
                                        })
                                       })
                                 </script>
-                                    <!--<select name="contact" class="form-control text-dark">
-                                        <option value="">Select Contact (INR)</option>
-                                        {% for customer in customers %}
-                                        <option value="{{ customer.customerName }}">{{ customer.customerName }}</option>
-                                        {% endfor %}
-                                        {% for vendor in vendors %}
-                                        <option value="{{ vendor.vendor_display_name }}">{{ vendor.vendor_display_name }}</option>
-                                        {% endfor %}
-                                        {% for emp in employee %}
-                    <option value="{{ emp.first_name}}{{ emp.last_name}}">{{ emp.first_name}} {{ emp.last_name}}</option>
-                    {% endfor %}
-                                    </select>-->
+                                    
                                 </td>
                                 <td><input type="number" name="debits" class="form-control text-dark"
                                         onchange="calculateTotals()"></td>
@@ -2584,7 +2541,7 @@ function reloadAccount() {
                     </div>
                 </div>
                 <input hidden id="customer_value_${rowIndex}" type="text" name="customer_id" value="">
-                <input type="text" class="form-control bg-light text-dark" id="customer_list_${rowIndex}" name="contact" placeholder="Search..." oninput="filterContacts(${rowIndex})"  onclick="toggleDropdownVisibility(${rowIndex})" required>
+                <input type="text" class="form-control bg-light text-dark" id="customer_list_${rowIndex}" name="contact" placeholder="Search..." oninput="filterContacts(${rowIndex})"  onclick="toggleDropdownVisibility1(${rowIndex})" required>
             `;
         debitsCell.innerHTML = '<input type="number" name="debits" class="form-control text-dark" onchange="calculateTotals()">';
         creditsCell.innerHTML = '<input type="number" name="credits" class="form-control text-dark" onchange="calculateTotals()">';
@@ -2606,6 +2563,11 @@ function reloadAccount() {
         var dropdownContainer = document.getElementById('custom_dropdowns_' + rowIdx);
         dropdownContainer.style.display = dropdownContainer.style.display === 'none' ? 'block' : 'none';
     }
+
+    function toggleDropdownVisibility1(rowIdx1) {
+        var dropdownContainer = document.getElementById('custom_dropdown1_' + rowIdx);
+        dropdownContainer.style.display = dropdownContainer.style.display === 'none' ? 'block' : 'none';
+    }
     
     function filterAccounts(rowIdx) {
         var input, filter, options, i;
@@ -2625,9 +2587,9 @@ function reloadAccount() {
     
     function filterContacts(rowIdx) {
         var input, filter, options, i;
-        input = document.getElementById('customer_list_' + rowIdx);
+        input = document.getElementById('customer_list_' + rowIdx1);
         filter = input.value.toUpperCase();
-        options = document.getElementById('contact_options_' + rowIdx).getElementsByClassName('contact-option');
+        options = document.getElementById('contact_options_' + rowIdx1).getElementsByClassName('contact-option');
     
         for (i = 0; i < options.length; i++) {
             var option = options[i];
@@ -2650,15 +2612,15 @@ function reloadAccount() {
         toggleDropdownVisibility(rowIdx);
     }
     
-    function selectContact(rowIdx, selectedOption) {
-        var contactInput = document.getElementById('customer_list_' + rowIdx);
+    function selectContact(rowIdx1, selectedOption) {
+        var contactInput = document.getElementById('customer_list_' + rowIdx1);
         var contactId = selectedOption.getAttribute('data-contact-id');
         var contactName = selectedOption.innerHTML;
     
         contactInput.value = contactName;
     
         // Toggle the display of the dropdown box
-        toggleDropdownVisibility(rowIdx);
+        toggleDropdownVisibility1(rowIdx1);
     }
     
     
@@ -2714,13 +2676,5 @@ function calculateTotals() {
         $('.selectpicker').selectpicker();
     });
 </script>
-<!--<script>
-  document.addEventListener('DOMContentLoaded', function () {
-      const journalNoInput = document.getElementById('journalNoInput');
-      const prefix = 'JN-';
-
-      journalNoInput.value = prefix;
-  });
-</script>-->
 
 {% endblock %}

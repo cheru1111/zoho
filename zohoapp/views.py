@@ -14999,7 +14999,7 @@ def add_journal(request):
     accounts = Chart_of_Account.objects.all()
     vendors = vendor_table.objects.all()
     customers = customer.objects.all()
-    employee=Payroll.objects.all()
+    employees=Payroll.objects.all()
 
     try:
         company = company_details.objects.get(user=request.user)
@@ -15019,18 +15019,18 @@ def add_journal(request):
         # Validate the journal number
         if not is_valid_journal_number(journal_no, user):
             messages.error(request, 'Invalid journal number format. Please enter a valid numeric journal number.Or please enter the continuous number')
-            return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors, 'customers': customers,
-                                                         'company_name': company_name, 'address': address,
-                                                         'company': company, 'employee': employee,
-                                                         'reference_no': reference_no})
+            return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors, 'customers': customers, 'employees': employees,
+                                             'company_name': company_name, 'address': address,
+                                             'company': company,
+                                             'reference_no': reference_no})
 
         # Check for duplicate journal number
         if Journal.objects.filter(journal_no=journal_no).exists():
             messages.error(request, 'Journal number already exists. Please choose a different journal number.')
-            return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors, 'customers': customers,
-                                                         'company_name': company_name, 'address': address,
-                                                         'company': company, 'employee': employee,
-                                                         'reference_no': reference_no})
+            return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors, 'customers': customers, 'employees': employees,
+                                             'company_name': company_name, 'address': address,
+                                             'company': company,
+                                             'reference_no': reference_no})
 
         notes = request.POST.get('notes')
         currency = request.POST.get('currency')
@@ -15086,12 +15086,12 @@ def add_journal(request):
         journal.total_credit = total_credit
         journal.difference = difference
         journal.save()
-
+        
         return redirect('manual_journal_home')
 
-    return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors, 'customers': customers,
+    return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors, 'customers': customers, 'employees': employees,
                                              'company_name': company_name, 'address': address,
-                                             'company': company, 'employee': employee,
+                                             'company': company,
                                              'reference_no': reference_no})
     
 @login_required(login_url='login')
