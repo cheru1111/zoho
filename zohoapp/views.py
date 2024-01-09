@@ -14939,7 +14939,7 @@ def add_journal(request):
 
     return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors,'customers': customers, 'company_name': company_name,'address': address,'company' : company,'employee':employee, 'reference_no': reference_no})
 '''
-def generate_reference_number(user):
+'''def generate_reference_number(user):
     last_record = Journal.objects.filter(user=user).order_by('-reference_no').first()
 
     if last_record:
@@ -14955,9 +14955,24 @@ def generate_reference_number(user):
         if all_reference_numbers != expected_reference_numbers:
             raise ValidationError("Reference numbers for user {} are not continuous. Please contact support.".format(user))
 
+    return expected_reference_no'''
+    
+def generate_reference_number(user):
+    # Get the highest reference number ever used
+    highest_reference_no = Journal.objects.filter(user=user).order_by('-reference_no').first()
+
+    if highest_reference_no:
+        expected_reference_no = highest_reference_no.reference_no + 1
+    else:
+        expected_reference_no = 1
+
+    # Check if the expected reference number is used by any record (deleted or not)
+    while Journal.objects.filter(user=user, reference_no=expected_reference_no).exists():
+        expected_reference_no += 1
+
     return expected_reference_no
 
-def is_valid_journal_number(journal_no, user):
+'''def is_valid_journal_number(journal_no, user):
     # Check if the journal number is a valid alphanumeric value or a valid integer
     if not (journal_no.isalnum() or journal_no.isdigit()):
         return False
@@ -14983,7 +14998,44 @@ def is_valid_journal_number(journal_no, user):
     elif highest_numeric_part is None and int(numeric_part) == 1:
         return True
     else:
+        return False'''
+
+def is_valid_journal_number(journal_no, user):
+    # Check if the journal number is a valid alphanumeric value or a valid integer
+    if not (journal_no.isalnum() or journal_no.isdigit()):
         return False
+
+    # Extract the numeric part of the journal number
+    numeric_part = ''.join(char for char in journal_no if char.isdigit())
+
+    # Check if the numeric part is a valid integer
+    if not numeric_part.isdigit():
+        return False
+
+    # Check if the combination of journal number and user is unique for the given company
+    is_unique_combination = Journal.objects.filter(journal_no=journal_no, user=user).count() == 0
+
+    # Get the highest saved journal number for the user (company)
+    try:
+        highest_journal = Journal.objects.filter(user=user).order_by('-journal_no').first()
+        highest_numeric_part = int(''.join(char for char in highest_journal.journal_no if char.isdigit())) if highest_journal else None
+    except Journal.DoesNotExist:
+        # Handle the case where there's no saved journal for the user (company)
+        highest_numeric_part = None
+
+    # Check if the entered journal number follows a continuous sequence
+    if highest_numeric_part is not None and int(numeric_part) == highest_numeric_part + 1:
+        return is_unique_combination
+    elif highest_numeric_part is None and int(numeric_part) == 1:
+        return is_unique_combination
+    else:
+        return False
+
+
+
+
+
+
 
 
 
@@ -15016,13 +15068,13 @@ def add_journal(request):
         date = request.POST.get('date')
         journal_no = request.POST.get('journal_no')
 
-        # Validate the journal number
-        if not is_valid_journal_number(journal_no, user):
-            messages.error(request, 'Invalid journal number format. Please enter a valid numeric journal number.Or please enter the continuous number')
+        is_valid = is_valid_journal_number(journal_no, user)
+        if not is_valid:
+            messages.error(request, 'Invalid journal number. Please enter a valid and continuous numeric sequence.')
             return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors, 'customers': customers, 'employees': employees,
-                                             'company_name': company_name, 'address': address,
-                                             'company': company,
-                                             'reference_no': reference_no})
+                                                 'company_name': company_name, 'address': address,
+                                                 'company': company,
+                                                 'reference_no': reference_no})
 
         # Check for duplicate journal number
         if Journal.objects.filter(journal_no=journal_no).exists():

@@ -1412,8 +1412,8 @@ class LoanAttach(models.Model):
     
 #-------------------------------------------------Mirna--------Manual journal------------------------------------------
 class ReferenceNumberCounter(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    counter = models.IntegerField(default=1)  
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    next_reference_no = models.IntegerField(default=1) 
       
 class Journal(models.Model):
     STATUS_CHOICES = (
@@ -1424,6 +1424,7 @@ class Journal(models.Model):
     date = models.DateField(null=True)
     journal_no = models.CharField(max_length=255, unique=True,null=True)  
     reference_no = models.IntegerField(blank=True, null=True)
+    deleted = models.BooleanField(default=False)
     notes = models.TextField(blank=True,null=True)
     currency = models.CharField(max_length=255,null=True)
     cash_journal = models.BooleanField(default=False,null=True)
@@ -1432,7 +1433,8 @@ class Journal(models.Model):
     total_credit = models.DecimalField(max_digits=10, decimal_places=2, default=0,null=True)
     difference = models.DecimalField(max_digits=10, decimal_places=2, default=0,null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft',null=True)
-    first_journal_entry = models.IntegerField(default=0)  # Add this field  
+    first_journal_entry = models.IntegerField(default=0)  # Add this field 
+     
 
     def __str__(self):
         return self.journal_no
