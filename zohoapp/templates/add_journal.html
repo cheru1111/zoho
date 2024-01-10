@@ -365,7 +365,7 @@ tr:hover{
                                                     {% if employees %}
                                                         {% for emp in employees %}
                                                             {% if emp.user == request.user %}
-                                                                <p class="drop_hovers ps-3 p-2 m-0">{{ emp.first_name }}</p>
+                                                                <p class="drop_hovers ps-3 p-2 m-0">{{ em.first_name}} {{ i.last_name}}</p>
                                                                 <span hidden>{{ emp.id }}</span>
                                                             {% endif %}
                                                         {% endfor %}
@@ -2631,11 +2631,26 @@ function reloadAccount() {
     }
     
 
-   function deleteRow(button) {
-    var row = button.parentNode.parentNode;
-    row.parentNode.removeChild(row);
-    calculateTotals(); // Recalculate totals after deleting a row
-}
+    function deleteRow(button) {
+        var table = document.getElementById("journal_table").getElementsByTagName('tbody')[0];
+        var row = button.parentNode.parentNode;
+        var rowIndex = row.rowIndex;  // Store the current rowIndex
+    
+        table.deleteRow(rowIndex - 1);  // Adjust the rowIndex to account for thead
+    
+        // Update index numbers for all remaining rows
+        for (var i = rowIndex - 1; i < table.rows.length; i++) {
+            var currentRow = table.rows[i];
+            var numberCell = currentRow.cells[0];
+            numberCell.innerHTML = i + 1;
+        }
+    
+        calculateTotals(); // Recalculate totals after deleting a row
+    }
+    
+    
+    
+
 
 function calculateTotals() {
     var debitInputs = document.querySelectorAll('input[name="debits"]');

@@ -8897,13 +8897,14 @@ def createpayroll(request):
         return redirect('payroll_list')
     else:
         return redirect('payroll_create')
-        
+       
         
 def payroll_list(request):
     company=company_details.objects.get(user=request.user)
-    p=Payroll.objects.all()
-    return render(request,'payroll_list.html',{'pay':p,'company':company})
-    
+    user_id=request.user.id
+    udata=User.objects.get(id=user_id)
+    data=Payroll.objects.filter(user=udata)
+    return render(request,'payroll_list.html',{'data':data,'company':company})
     
 def payroll_delete(request,pid):
     p=Payroll.objects.get(id=pid)
