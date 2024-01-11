@@ -43,7 +43,7 @@ from calendar import HTMLCalendar
 from django.template import loader
 from decimal import Decimal
 from django.db.models import Max
-
+from django.db.models import F, Q
 def index(request):
 
     return render(request,'landpage.html')
@@ -14958,7 +14958,9 @@ def add_journal(request):
 
     return expected_reference_no'''
     
-def generate_reference_number(user):
+    
+    
+'''def generate_reference_number(user):
     # Get the highest reference number ever used
     highest_reference_no = Journal.objects.filter(user=user).order_by('-reference_no').first()
 
@@ -14971,7 +14973,33 @@ def generate_reference_number(user):
     while Journal.objects.filter(user=user, reference_no=expected_reference_no).exists():
         expected_reference_no += 1
 
+    return expected_reference_no'''
+    
+def generate_reference_number(user):
+    # Get the highest reference number ever used (including deleted records)
+    highest_reference_no = Journal.objects.filter(user=user).order_by('-reference_no').first()
+
+    if highest_reference_no:
+        expected_reference_no = highest_reference_no.reference_no + 1
+    else:
+        expected_reference_no = 1
+
+    # Check if the expected reference number is used by any non-deleted record
+    while Journal.objects.filter(user=user, reference_no=expected_reference_no).exclude(Q(deleted=True) & Q(reference_no=expected_reference_no)).exists():
+        expected_reference_no += 1
+
     return expected_reference_no
+
+
+
+
+
+
+
+
+
+
+
 
 '''def is_valid_journal_number(journal_no, user):
     # Check if the journal number is a valid alphanumeric value or a valid integer
@@ -15001,36 +15029,6 @@ def generate_reference_number(user):
     else:
         return False'''
 
-def is_valid_journal_number(journal_no, user):
-    # Check if the journal number is a valid alphanumeric value or a valid integer
-    if not (journal_no.isalnum() or journal_no.isdigit()):
-        return False
-
-    # Extract the numeric part of the journal number
-    numeric_part = ''.join(char for char in journal_no if char.isdigit())
-
-    # Check if the numeric part is a valid integer
-    if not numeric_part.isdigit():
-        return False
-
-    # Check if the combination of journal number and user is unique for the given company
-    is_unique_combination = Journal.objects.filter(journal_no=journal_no, user=user).count() == 0
-
-    # Get the highest saved journal number for the user (company)
-    try:
-        highest_journal = Journal.objects.filter(user=user).order_by('-journal_no').first()
-        highest_numeric_part = int(''.join(char for char in highest_journal.journal_no if char.isdigit())) if highest_journal else None
-    except Journal.DoesNotExist:
-        # Handle the case where there's no saved journal for the user (company)
-        highest_numeric_part = None
-
-    # Check if the entered journal number follows a continuous sequence
-    if highest_numeric_part is not None and int(numeric_part) == highest_numeric_part + 1:
-        return is_unique_combination
-    elif highest_numeric_part is None and int(numeric_part) == 1:
-        return is_unique_combination
-    else:
-        return False
 
 
 
