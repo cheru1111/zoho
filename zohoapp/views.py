@@ -14985,7 +14985,7 @@ def generate_reference_number(user):
         expected_reference_no = 1
 
     # Check if the expected reference number is used by any non-deleted record
-    while Journal.objects.filter(user=user, reference_no=expected_reference_no).exclude(Q(deleted=True) & Q(reference_no=expected_reference_no)).exists():
+    while Journal.objects.filter(user=user, reference_no=expected_reference_no).exists():
         expected_reference_no += 1
 
     return expected_reference_no

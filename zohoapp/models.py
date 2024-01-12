@@ -1411,9 +1411,9 @@ class LoanAttach(models.Model):
     
     
 #-------------------------------------------------Mirna--------Manual journal------------------------------------------
-class ReferenceNumberCounter(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    next_reference_no = models.IntegerField(default=1) 
+class LastDeletedReference(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    last_deleted_reference = models.IntegerField(default=0)
       
 class Journal(models.Model):
     STATUS_CHOICES = (
@@ -1421,6 +1421,7 @@ class Journal(models.Model):
         ('save', 'Save'),
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    company = models.ForeignKey( company_details, on_delete=models.CASCADE, null=True, blank=True)
     date = models.DateField(null=True)
     journal_no = models.CharField(max_length=255, unique=True,null=True)  
     reference_no = models.IntegerField(blank=True, null=True)

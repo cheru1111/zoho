@@ -2502,48 +2502,50 @@ function reloadAccount() {
         rowIndex++;
         descriptionCell.innerHTML = '<input type="text" name="description" class="form-control text-dark">';
         contactCell.innerHTML = `
-            <div id="custom_dropdown1_${rowIndex}" class="position-relative">
-                <div class="position-absolute bg-success rounded bg-light text-dark border border-dark" style="margin-top: 3rem;">
-                    <div id="custom-dropdown1">
-                        <div style="overflow-y: auto; height: 10rem;" name="contact">
-                            <div id="contact_options_${rowIndex}">
-                                {% if customers %}
-                                    {% for customer in customers %}
-                                        {% if customer.user == request.user %}
-                                            <p class="drop_hovers ps-3 p-2 m-0 contact-option" onclick="selectContact(${rowIndex}, this)">{{ customer.customerName }}</p>
-                                            <span hidden>{{ customer.id }}</span>
-                                        {% endif %}
-                                    {% endfor %}
-                                {% else %}
-                                    <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No customers are available</h6>
-                                {% endif %}
-                                {% if vendors %}
-                                    {% for vendor in vendors %}
-                                        {% if vendor.user == request.user %}
-                                            <p class="drop_hovers ps-3 p-2 m-0 contact-option" onclick="selectContact(${rowIndex}, this)">{{ vendor.vendor_display_name }}</p>
-                                            <span hidden>{{ vendor.id }}</span>
-                                        {% endif %}
-                                    {% endfor %}
-                                {% else %}
-                                    <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No vendors are available</h6>
-                                {% endif %}
-                                {% if employees %}
-                                    {% for employee in employees %}
-                                        {% if employee.user == request.user %}
-                                            <p class="drop_hovers ps-3 p-2 m-0 contact-option" onclick="selectContact(${rowIndex}, this)">{{ employee.first_name }}{{ employee.last_name }}</p>
-                                            <span hidden>{{ employee.id }}</span>
-                                        {% endif %}
-                                    {% endfor %}
-                                {% else %}
-                                    <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No employees are available</h6>
-                                {% endif %}
-                            </div>
+        <div id="custom_dropdown1_${rowIndex}" class="position-relative">
+            <div class="position-absolute bg-success rounded bg-light text-dark border border-dark" style="margin-top: 3rem;">
+                <div id="custom-dropdown1">
+                    <div style="overflow-y: auto; height: 10rem;" name="contact">
+                        <div id="contact_options_${rowIndex}">
+                            {% if customers %}
+                                {% for customer in customers %}
+                                    {% if customer.user == request.user %}
+                                        <p class="drop_hovers ps-3 p-2 m-0 contact-option" onclick="selectContact(${rowIndex}, this)">{{ customer.customerName }}</p>
+                                        <span hidden>{{ customer.id }}</span>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No customers are available</h6>
+                            {% endif %}
+                            {% if vendors %}
+                                {% for vendor in vendors %}
+                                    {% if vendor.user == request.user %}
+                                        <p class="drop_hovers ps-3 p-2 m-0 contact-option" onclick="selectContact(${rowIndex}, this)">{{ vendor.vendor_display_name }}</p>
+                                        <span hidden>{{ vendor.id }}</span>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No vendors are available</h6>
+                            {% endif %}
+                            {% if employees %}
+                                {% for employee in employees %}
+                                    {% if employee.user == request.user %}
+                                        <p class="drop_hovers ps-3 p-2 m-0 contact-option" onclick="selectContact(${rowIndex}, this)">{{ employee.first_name }}{{ employee.last_name }}</p>
+                                        <span hidden>{{ employee.id }}</span>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <h6 class="drop_hovers ps-3 p-2 m-0" style="cursor: not-allowed; pointer-events: none;">No employees are available</h6>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
-                <input hidden id="customer_value_${rowIndex}" type="text" name="customer_id" value="">
-                <input type="text" class="form-control bg-light text-dark" id="customer_list_${rowIndex}" name="contact" placeholder="Search..." oninput="filterContacts(${rowIndex})"  onclick="toggleDropdownVisibility1(${rowIndex})" required>
-            `;
+            </div>
+        </div>
+        <input hidden id="customer_value_${rowIndex}" type="text" name="customer_id" value="">
+        <input type="text" class="form-control bg-light text-dark" id="customer_list_${rowIndex}" name="contact" placeholder="Search..." oninput="filterContacts(${rowIndex})"  onclick="toggleDropdownVisibility1(${rowIndex})" required>
+    `;
+    
         debitsCell.innerHTML = '<input type="number" name="debits" class="form-control text-dark" onchange="calculateTotals()">';
         creditsCell.innerHTML = '<input type="number" name="credits" class="form-control text-dark" onchange="calculateTotals()">';
         actionCell.innerHTML = '<button type="button" class="btn btn-outline-danger p-1" onclick="deleteRow(this)" style="width:25px; height: 25px; border-radius: 90%"><i class="fa fa-window-close bg-dark text-danger"></i></button>';
@@ -2566,9 +2568,10 @@ function reloadAccount() {
     }
 
     function toggleDropdownVisibility1(rowIdx1) {
-        var dropdownContainer = document.getElementById('custom_dropdown1_' + rowIdx);
+        var dropdownContainer = document.getElementById('custom_dropdown1_' + rowIdx1);
         dropdownContainer.style.display = dropdownContainer.style.display === 'none' ? 'block' : 'none';
     }
+    
     
     function filterAccounts(rowIdx) {
         var input, filter, options, i;
@@ -2586,7 +2589,7 @@ function reloadAccount() {
         }
     }
     
-    function filterContacts(rowIdx) {
+    function filterContacts(rowIdx1) {
         var input, filter, options, i;
         input = document.getElementById('customer_list_' + rowIdx1);
         filter = input.value.toUpperCase();
@@ -2601,6 +2604,7 @@ function reloadAccount() {
             }
         }
     }
+    
     
     function selectAccount(rowIdx, selectedOption) {
         var accountInput = document.getElementById('account_list_' + rowIdx);
