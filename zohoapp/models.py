@@ -1411,9 +1411,16 @@ class LoanAttach(models.Model):
     
     
 #-------------------------------------------------Mirna--------Manual journal------------------------------------------
-class LastDeletedReference(models.Model):
+'''class LastDeletedReference(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    last_deleted_reference = models.IntegerField(default=0)
+    last_deleted_reference = models.IntegerField(default=0)'''
+    
+class JournalRecievedIdModel(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True,blank=True)
+    pattern = models.CharField(max_length=255,null=True)
+    ref_number = models.IntegerField(max_length=255,null=True)
+    jn_rec_number = models.CharField(max_length=255,null=True)
+
       
 class Journal(models.Model):
     STATUS_CHOICES = (

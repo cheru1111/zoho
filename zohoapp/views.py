@@ -14779,34 +14779,7 @@ def view_journal_draft(request):
     company = company_details.objects.get(user=user)
     return render(request,'manual_journal.html',{"view":view,"company":company})'''
     
-def manual_journal_home(request):
-    user = request.user
-    journals = Journal.objects.filter(user=user.id)
-    journal_entries = JournalEntry.objects.filter(journal__in=journals)
 
-    company = company_details.objects.get(user=user)
-    
-    return render(request, 'manual_journal.html', {"journals": journals, "journal_entries": journal_entries, "company": company}) 
-   
-login_required(login_url='login')
-def view_manual_all(request):
-    view=Journal.objects.filter(user=request.user.id)
-    return render(request,'manual_journal.html',{"view":view})   
-    
-login_required(login_url='login')
-def view_manual_draft(request):
-    view=Journal.objects.filter(status="draft",user=request.user.id)
-    return render(request,'manual_journal.html',{"view":view}) 
-
-login_required(login_url='login')
-def view_manual_save(request):
-    view=Journal.objects.filter(status="save",user=request.user.id)
-    return render(request,'manual_journal.html',{"view":view})
-
-def delet_manual(request,id):
-    d=Journal.objects.get(id=id)
-    d.delete()
-    return redirect('manual_journal_home')
 '''
 @login_required(login_url='login')
 def create_sales_order(request):
@@ -14975,7 +14948,7 @@ def add_journal(request):
 
     return expected_reference_no'''
     
-def generate_reference_number(user):
+'''def generate_reference_number(user):
     # Get the highest reference number ever used (including deleted records)
     highest_reference_no = Journal.objects.filter(user=user).order_by('-reference_no').first()
 
@@ -14988,19 +14961,8 @@ def generate_reference_number(user):
     while Journal.objects.filter(user=user, reference_no=expected_reference_no).exists():
         expected_reference_no += 1
 
-    return expected_reference_no
-
-
-
-
-
-
-
-
-
-
-
-
+    return expected_reference_no'''
+    
 '''def is_valid_journal_number(journal_no, user):
     # Check if the journal number is a valid alphanumeric value or a valid integer
     if not (journal_no.isalnum() or journal_no.isdigit()):
@@ -15028,7 +14990,155 @@ def generate_reference_number(user):
         return True
     else:
         return False'''
+    
+def manual_journal_home(request):
+    user = request.user
+    journals = Journal.objects.filter(user=user.id)
+    journal_entries = JournalEntry.objects.filter(journal__in=journals)
 
+    company = company_details.objects.get(user=user)
+    
+    return render(request, 'manual_journal.html', {"journals": journals, "journal_entries": journal_entries, "company": company}) 
+   
+login_required(login_url='login')
+def view_manual_all(request):
+    view=Journal.objects.filter(user=request.user.id)
+    return render(request,'manual_journal.html',{"view":view})   
+    
+login_required(login_url='login')
+def view_manual_draft(request):
+    view=Journal.objects.filter(status="draft",user=request.user.id)
+    return render(request,'manual_journal.html',{"view":view}) 
+
+login_required(login_url='login')
+def view_manual_save(request):
+    view=Journal.objects.filter(status="save",user=request.user.id)
+    return render(request,'manual_journal.html',{"view":view})
+
+def delet_manual(request,id):
+    d=Journal.objects.get(id=id)
+    d.delete()
+    return redirect('manual_journal_home')
+    
+'''def generate_reference_number(user, journal_no):
+    if request.method==POST:
+    if JournalRecievedIdModel.objects.filter(user=user.id).exists():
+        jn = JournalRecievedIdModel.objects.filter(user=user.id)
+        jn_id = jn.last()
+        if jn.exclude(id=jn_id.id).last():
+            jn_id_second_last = jn.exclude(id=jn_id.id).last()
+            pattern = jn_id_second_last.pattern
+        else:
+            jn_id_second_last = jn.first()
+            pattern = jn_id_second_last.pattern
+        if journal_no != jn_id.jn_rec_number and journal_no != '':
+            jn_id = JournalRecievedIdModel(user=user)
+            count_for_ref_no = JournalRecievedIdModel.objects.filter(user=user.id).count()
+            jn_id.pattern = pattern
+            jn_id.save()
+            ref_num = int(count_for_ref_no) + 2
+            jn_id.ref_number = f'{ref_num:02}'
+            jn_id.jn_rec_number = jn_id_second_last.jn_rec_number
+            jn_id.save()
+        else:
+            jn_id = JournalRecievedIdModel(user=user)
+            count_for_ref_no = JournalRecievedIdModel.objects.filter(user=user.id).count()
+            jn_id.pattern = pattern
+            jn_id.save()
+            ref_num = int(count_for_ref_no) + 2
+            jn_id.ref_number = f'{ref_num:02}'
+            jn_rec_num = ''.join(i for i in jn_id_second_last.jn_rec_number if i.isdigit())
+            jn_rec_num = int(jn_rec_num) + 1
+            jn_id.jn_rec_number = f'{pattern}{jn_rec_num:02}'
+            jn_id.save()
+    else:
+        jn_id = JournalRecievedIdModel(user=user)
+        jn_id.save()
+        jn_id.ref_number = f'{2:02}'
+        pattern = ''.join(i for i in journal_no if not i.isdigit())
+        jn_id.pattern = pattern
+        jn_id.jn_rec_number = f'{pattern}{2:02}'
+        jn_id.save()'''
+        
+        
+
+
+def generate_reference_number(request, user, journal_no):
+    if request.method == 'POST':  # Assuming 'POST' method is intended
+        if JournalRecievedIdModel.objects.filter(user=user.id).exists():
+            jn = JournalRecievedIdModel.objects.filter(user=user.id)
+            jn_id = jn.last()
+
+            # Check if there is a second last journal record
+            if jn.exclude(id=jn_id.id).last():
+                jn_id_second_last = jn.exclude(id=jn_id.id).last()
+                pattern = jn_id_second_last.pattern
+            else:
+                jn_id_second_last = jn.first()
+                pattern = jn_id_second_last.pattern
+
+            if journal_no != jn_id.jn_rec_number and journal_no != '':
+                # Creating a new JournalRecievedIdModel instance
+                jn_id = JournalRecievedIdModel(user=user)
+                count_for_ref_no = JournalRecievedIdModel.objects.filter(user=user.id).count()
+                jn_id.pattern = pattern
+                jn_id.save()
+
+                # Using count_for_ref_no + 1 as the reference number
+                ref_num = count_for_ref_no + 1
+                jn_id.ref_number = f'{ref_num:02}'
+                jn_id.jn_rec_number = jn_id_second_last.jn_rec_number
+                jn_id.save()
+            else:
+                # Creating a new JournalRecievedIdModel instance
+                jn_id = JournalRecievedIdModel(user=user)
+                count_for_ref_no = JournalRecievedIdModel.objects.filter(user=user.id).count()
+                jn_id.pattern = pattern
+                jn_id.save()
+
+                # Using count_for_ref_no + 1 as the reference number
+                ref_num = count_for_ref_no + 1
+                jn_id.ref_number = f'{ref_num:02}'
+
+                # Incrementing the jn_rec_number
+                jn_rec_num = int(''.join(i for i in jn_id_second_last.jn_rec_number if i.isdigit())) + 1
+                jn_id.jn_rec_number = f'{pattern}{jn_rec_num:02}'
+                jn_id.save()
+        else:
+            # Creating a new JournalRecievedIdModel instance
+            jn_id = JournalRecievedIdModel(user=user)
+            jn_id.save()
+
+            # Setting initial values for ref_number, pattern, and jn_rec_number
+            jn_id.ref_number = '02'
+            pattern = ''.join(i for i in journal_no if not i.isdigit())
+            jn_id.pattern = pattern
+            jn_id.jn_rec_number = f'{pattern}02'
+            jn_id.save()
+
+    # Add a return statement or appropriate response if needed
+    return HttpResponse("Reference number generated successfully.")
+
+
+
+
+@login_required(login_url='login')
+def check_journal_num_valid(request):
+    journals = JournalRecievedIdModel.objects.filter(user=request.user.id)
+    journal_recieved_number = request.POST.get('journal_no')
+    if journals.exists():
+        last = journals.last()
+        last_id = last.jn_rec_number
+        if journal_recieved_number == last_id:
+            return HttpResponse("")
+        else:
+            return HttpResponse("<span class='text-danger'>Journal Recieved Number is not Continues</span>")
+    else:
+        # if payments_recieved_number != 'PRN-01':
+        #     return HttpResponse("<span class='text-danger'>Payment Recieved Number is not Continues</span>")
+        # else:
+        #     return HttpResponse("")
+        return HttpResponse("")
 
 
 
@@ -15059,29 +15169,34 @@ def add_journal(request):
     except company_details.DoesNotExist:
         company_name = ''
         address = ''
-        
-    reference_no = generate_reference_number(request.user)
+    journal_no = request.POST.get('journal_no')    
+    reference_no = generate_reference_number(request, request.user, journal_no)
+    jon = JournalRecievedIdModel.objects.filter(user=request.user.id)
+    last = ''
+    if jon.exists():
+        last = jon.last()
+
 
     if request.method == 'POST':
         user = request.user
         date = request.POST.get('date')
         journal_no = request.POST.get('journal_no')
 
-        is_valid = is_valid_journal_number(journal_no, user)
+        is_valid = check_journal_num_valid(request)
         if not is_valid:
             messages.error(request, 'Invalid journal number. Please enter a valid and continuous numeric sequence.')
             return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors, 'customers': customers, 'employees': employees,
-                                                 'company_name': company_name, 'address': address,
-                                                 'company': company,
-                                                 'reference_no': reference_no})
+                                                         'company_name': company_name, 'address': address,
+                                                         'company': company,
+                                                         'reference_no': reference_no, 'last': last})
 
         # Check for duplicate journal number
         if Journal.objects.filter(journal_no=journal_no).exists():
             messages.error(request, 'Journal number already exists. Please choose a different journal number.')
             return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors, 'customers': customers, 'employees': employees,
-                                             'company_name': company_name, 'address': address,
-                                             'company': company,
-                                             'reference_no': reference_no})
+                                                         'company_name': company_name, 'address': address,
+                                                         'company': company,
+                                                         'reference_no': reference_no, 'last': last})
 
         notes = request.POST.get('notes')
         currency = request.POST.get('currency')
@@ -15143,7 +15258,7 @@ def add_journal(request):
     return render(request, 'add_journal.html', {'accounts': accounts, 'vendors': vendors, 'customers': customers, 'employees': employees,
                                              'company_name': company_name, 'address': address,
                                              'company': company,
-                                             'reference_no': reference_no})
+                                             'reference_no': reference_no,'last':last})
     
 @login_required(login_url='login')
 def journal_account_dropdown(request):

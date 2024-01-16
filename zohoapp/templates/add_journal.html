@@ -224,16 +224,18 @@ tr:hover{
                             <label for="journal_no">Journal No:</label>
                         </div>
                         <div class="col-md-6">
-                            <input type="text" name="journal_no"  class="form-control text-dark">
+                            <input type="text" {% if last %}value="{{ last.jn_rec_number }}" placeholder="{{ last.jn_rec_number }}"{% endif %} name="journal_no"  class="form-control text-dark" required>
                         </div>
                     </div>
+
+                    <!--<input id="prn_numbr" type="text"  {% if last %}value="{{ last.jn_rec_number }}" placeholder="{{ last.jn_rec_number }}"{% endif %} name="journal_no" required>-->
                    
                     <div class="row mt-2">
                         <div class="col-md-3">
                             <label for="reference_no">Reference No:</label>
                         </div>
                         <div class="col-md-6">
-                            <input type="text" name="reference_no" value="{{ reference_no }}" class="form-control text-dark" readonly>
+                            <input type="text"  {% if last %}value="{{ last.rec_number }}" placeholder="{{ last.rec_number }}"{% endif %} name="reference_no" class="form-control text-dark" readonly>
                         </div>
                     </div>
                     
